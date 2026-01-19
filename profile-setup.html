@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion-Flow | Set Up Your Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-dark: #0a0a12;
+            --color-bg: #0f0f1a;
+            --color-bg-light: #1a1a2e;
+            --color-primary: #00bcd4;
+            --color-accent: #00bcd4;
+            --color-accent-alt: #f97316;
+            --color-text: #e2e8f0;
+            --color-text-muted: #94a3b8;
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .motion-gradient-text {
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .motion-card {
+            background-color: var(--color-bg-light);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motion-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 188, 212, 0.2);
+            box-shadow: 
+                0 0 0 1px rgba(0, 188, 212, 0.1),
+                0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .motion-input {
+            background-color: rgba(26, 26, 46, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-text);
+            transition: all 0.3s ease;
+        }
+
+        .motion-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+        }
+
+        .motion-button {
+            background: transparent;
+            color: var(--color-accent);
+            border: 2px solid var(--color-accent);
+            border-radius: 8px;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motion-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(0, 188, 212, 0.2), 
+                transparent
+            );
+            transition: left 0.6s;
+        }
+
+        .motion-button:hover::before {
+            left: 100%;
+        }
+
+        .motion-button:hover {
+            background-color: rgba(0, 188, 212, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 188, 212, 0.2);
+        }
+
+        .motion-button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-dark);
+            border-color: var(--color-accent);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        .motion-button-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 0 5px 2px var(--color-accent),
+                0 15px 40px rgba(0, 188, 212, 0.1);
+        }
+
+        .profile-pic-preview {
+            border: 3px solid var(--color-accent);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+        }
+
+        .profile-pic-preview:hover {
+            border-color: var(--color-accent-alt);
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.4);
+            transform: scale(1.05);
+        }
+
+        .avatar-option {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            width: 80px;
+            height: 80px;
+        }
+
+        .avatar-option:hover, .avatar-option.selected {
+            border-color: var(--color-accent);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+        }
+
+        .interest-tag {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(26, 26, 46, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .interest-tag:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        .interest-tag.selected {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--color-dark);
+            font-weight: 600;
+        }
+
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+
+        .social-input:focus + .social-icon {
+            color: var(--color-accent);
+        }
+
+        .glow-border {
+            position: relative;
+        }
+
+        .glow-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--color-accent), var(--color-accent-alt), var(--color-accent));
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .glow-border:hover::before {
+            opacity: 0.3;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 188, 212, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(0, 188, 212, 0.5); }
+        }
+
+        .pulse-animation {
+            animation: pulse-glow 2s infinite;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--color-accent), 
+                var(--color-accent-alt), 
+                transparent
+            );
+            margin: 2rem 0;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            justify-items: center;
+        }
+
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .avatar-label {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            text-align: center;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .avatar-avatar {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-avatar:hover, .avatar-avatar.selected {
+            border-color: var(--color-accent);
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+        }
+
+        .avatar-category {
+            margin-bottom: 25px;
+        }
+
+        .avatar-category h4 {
+            color: var(--color-text);
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-4xl">
+        <div class="glow-border">
+            <div class="motion-card p-8 md:p-10">
+                <!-- Header -->
+                <div class="text-center mb-10">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-3 font-['Orbitron']">
+                        MOTION<span class="motion-gradient-text">FLOW</span>
+                    </h1>
+                    <p class="text-gray-400 text-lg">Complete your profile to join the community</p>
+                    <div class="section-divider w-48 mx-auto mt-4"></div>
+                </div>
+
+                <!-- Message Box -->
+                <div id="message-box" class="hidden p-4 mb-6 rounded-lg text-sm bg-gray-900 border border-gray-800"></div>
+
+                <!-- Form -->
+                <form id="profile-setup-form" class="space-y-8">
+                    <!-- Profile Picture -->
+                    <div class="motion-card p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-camera text-cyan-400"></i>
+                            <span>Profile Picture</span>
+                        </h2>
+                        
+                        <!-- Main Profile Preview -->
+                        <div class="flex flex-col items-center mb-8">
+                            <div class="relative mb-4">
+                                <img id="profile-pic-preview" src="../lib/images/default.jpg" 
+                                     alt="Profile Preview" class="profile-pic-preview w-40 h-40 rounded-full pulse-animation">
+                                <div class="absolute bottom-4 right-4 bg-gradient-to-br from-cyan-500 to-orange-500 p-3 rounded-full">
+                                    <i class="fas fa-camera text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="file" id="profile-picture" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                                <button type="button" onclick="document.getElementById('profile-picture').click()" 
+                                        class="motion-button px-5 py-2.5">
+                                    <i class="fas fa-upload mr-2"></i>Upload Custom Photo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Boys Avatars -->
+                        <div class="avatar-category">
+                            <h4><i class="fas fa-male text-blue-400"></i>Boys</h4>
+                            <div class="avatar-grid">
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar1.jpg" 
+                                         onclick="selectAvatar('boy1', '../lib/images/avatar1.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="boy1">
+                                    <span class="avatar-label">Avatar 1</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar2.jpg" 
+                                         onclick="selectAvatar('boy2', '../lib/images/avatar2.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="boy2">
+                                    <span class="avatar-label">Avatar 2</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar3.jpg" 
+                                         onclick="selectAvatar('boy3', '../lib/images/avatar3.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="boy3">
+                                    <span class="avatar-label">Avatar 3</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar4.jpg" 
+                                         onclick="selectAvatar('boy4', '../lib/images/avatar4.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="boy4">
+                                    <span class="avatar-label">Avatar 4</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar5.jpg" 
+                                         onclick="selectAvatar('boy5', '../lib/images/avatar5.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="boy5">
+                                    <span class="avatar-label">Avatar 5</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Girls Avatars -->
+                        <div class="avatar-category">
+                            <h4><i class="fas fa-female text-pink-400"></i>Girls</h4>
+                            <div class="avatar-grid">
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar6.jpg" 
+                                         onclick="selectAvatar('girl1', '../lib/images/avatar6.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="girl1">
+                                    <span class="avatar-label">Avatar 6</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar7.jpg" 
+                                         onclick="selectAvatar('girl2', '../lib/images/avatar7.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="girl2">
+                                    <span class="avatar-label">Avatar 7</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar8.jpg" 
+                                         onclick="selectAvatar('girl3', '../lib/images/avatar8.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="girl3">
+                                    <span class="avatar-label">Avatar 8</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar9.jpg" 
+                                         onclick="selectAvatar('girl4', '../lib/images/avatar9.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="girl4">
+                                    <span class="avatar-label">Avatar 9</span>
+                                </div>
+                                <div class="avatar-container">
+                                    <img src="../lib/images/avatar10.jpg" 
+                                         onclick="selectAvatar('girl5', '../lib/images/avatar10.jpg')" 
+                                         class="avatar-avatar" 
+                                         data-id="girl5">
+                                    <span class="avatar-label">Avatar 10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Username -->
+                    <div class="motion-card p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-at text-cyan-400"></i>
+                            <span>Username</span>
+                        </h2>
+                        <div>
+                            <input type="text" id="username" placeholder="e.g., motion_flow_user" 
+                                   class="motion-input w-full p-4 rounded-lg placeholder-gray-600" 
+                                   required minlength="3" maxlength="20">
+                            <div class="flex items-center mt-3">
+                                <span id="username-status" class="text-sm text-gray-400">
+                                    <i class="fas fa-info-circle mr-1"></i>Choose a unique username
+                                </span>
+                                <div class="ml-auto">
+                                    <span id="char-count" class="text-sm text-gray-400">0/20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="motion-card p-6">
+                            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                                <i class="fas fa-user text-cyan-400"></i>
+                                <span>Full Name</span>
+                            </h2>
+                            <input type="text" id="full-name" placeholder="Your full name" 
+                                   class="motion-input w-full p-4 rounded-lg placeholder-gray-600">
+                        </div>
+                        <div class="motion-card p-6">
+                            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                                <i class="fas fa-map-marker-alt text-cyan-400"></i>
+                                <span>Location</span>
+                            </h2>
+                            <input type="text" id="location" placeholder="City, Country" 
+                                   class="motion-input w-full p-4 rounded-lg placeholder-gray-600">
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="motion-card p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-pen text-cyan-400"></i>
+                            <span>Bio</span>
+                        </h2>
+                        <textarea id="bio" rows="3" placeholder="Share your interests, skills, or a short introduction..." 
+                                  class="motion-input w-full p-4 rounded-lg placeholder-gray-600 resize-none"
+                                  maxlength="250"></textarea>
+                        <div class="flex justify-between mt-3">
+                            <span class="text-sm text-gray-400">Optional</span>
+                            <span id="bio-char-count" class="text-sm text-gray-400">0/250</span>
+                        </div>
+                    </div>
+
+                    <!-- Interests -->
+                    <div class="motion-card p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-heart text-cyan-400"></i>
+                            <span>Interests</span>
+                        </h2>
+                        <p class="text-gray-400 mb-4">Select up to 5 topics you're interested in:</p>
+                        <div class="flex flex-wrap gap-2 mb-4" id="interests-container"></div>
+                        <div class="flex gap-2">
+                            <input type="text" id="custom-interest" placeholder="Add custom interest" 
+                                   class="motion-input flex-1 p-3 rounded-lg placeholder-gray-600">
+                            <button type="button" onclick="addCustomInterest()" 
+                                    class="motion-button-primary px-4 py-3">
+                                <i class="fas fa-plus mr-2"></i>Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="motion-card p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-share-alt text-cyan-400"></i>
+                            <span>Social Links</span>
+                            <span class="text-sm text-gray-400 font-normal">(Optional)</span>
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <i class="fab fa-tiktok text-black w-6 text-center social-icon"></i>
+                                <input type="text" id="tiktok" placeholder="TikTok username" 
+                                       class="motion-input flex-1 p-3 rounded-lg placeholder-gray-600 social-input">
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <i class="fab fa-youtube text-red-500 w-6 text-center social-icon"></i>
+                                <input type="text" id="youtube" placeholder="YouTube channel name or URL" 
+                                       class="motion-input flex-1 p-3 rounded-lg placeholder-gray-600 social-input">
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <i class="fab fa-instagram text-pink-500 w-6 text-center social-icon"></i>
+                                <input type="text" id="instagram" placeholder="Instagram username" 
+                                       class="motion-input flex-1 p-3 rounded-lg placeholder-gray-600 social-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy -->
+                    <div class="motion-card p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-lock text-cyan-400"></i>
+                            <span>Privacy Settings</span>
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-300 font-medium">Profile Visibility</p>
+                                    <p class="text-gray-400 text-sm">Who can see your profile</p>
+                                </div>
+                                <select id="profile-visibility" class="motion-input px-4 py-2 rounded-lg">
+                                    <option value="public">Public</option>
+                                    <option value="friends">Friends Only</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="show-email" class="h-4 w-4 rounded accent-cyan-500">
+                                <label for="show-email" class="ml-3 text-gray-300">Show email on profile</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-800">
+                        <button type="button" onclick="skipProfileSetup()" 
+                                class="motion-button px-6 py-3 w-full sm:w-auto">
+                            <i class="fas fa-forward mr-2"></i>Skip for Now
+                        </button>
+                        <button type="submit" id="submit-button" 
+                                class="motion-button-primary px-8 py-3 font-semibold w-full sm:w-auto">
+                            <i class="fas fa-rocket mr-2"></i>Complete Setup
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Footer Note -->
+                <div class="mt-8 text-center text-gray-500 text-sm">
+                    <p>Your profile helps us connect you with the right creators and content.</p>
+                    <p class="mt-1">You can update these settings anytime in your profile.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc,
+            getDoc,
+            collection,
+            query,
+            where,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let auth = null;
+        let db = null;
+        let currentUser = null;
+        let selectedAvatar = 'boy1';
+        let selectedInterests = new Set();
+        let profileImageFile = null;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+            authDomain: "motion-flow-47450.firebaseapp.com",
+            databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+            projectId: "motion-flow-47450",
+            storageBucket: "motion-flow-47450.firebasestorage.app",
+            messagingSenderId: "686875529848",
+            appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+            measurementId: "G-K46N8C1HFQ"
+        };
+
+        // Avatar paths - using your local images
+        const avatarOptions = [
+            { id: 'boy1', name: 'Avatar 1', url: '../lib/images/avatar1.jpg' },
+            { id: 'boy2', name: 'Avatar 2', url: '../lib/images/avatar2.jpg' },
+            { id: 'boy3', name: 'Avatar 3', url: '../lib/images/avatar3.jpg' },
+            { id: 'boy4', name: 'Avatar 4', url: '../lib/images/avatar4.jpg' },
+            { id: 'boy5', name: 'Avatar 5', url: '../lib/images/avatar5.jpg' },
+            { id: 'girl1', name: 'Avatar 6', url: '../lib/images/avatar6.jpg' },
+            { id: 'girl2', name: 'Avatar 7', url: '../lib/images/avatar7.jpg' },
+            { id: 'girl3', name: 'Avatar 8', url: '../lib/images/avatar8.jpg' },
+            { id: 'girl4', name: 'Avatar 9', url: '../lib/images/avatar9.jpg' },
+            { id: 'girl5', name: 'Avatar 10', url: '../lib/images/avatar10.jpg' }
+        ];
+
+        // Available interests
+        const availableInterests = [
+            "Animation", "Motion Design", "Visual Effects", "3D Modeling", "Graphic Design",
+            "Video Editing", "Cinematography", "Typography", "UI/UX Design", "Illustration",
+            "Sound Design", "Color Grading", "Storyboarding", "Character Design", "Augmented Reality",
+            "Virtual Reality", "Game Design", "Web Design", "Branding", "Photography"
+        ];
+
+        const showMessage = (text, type = 'error') => {
+            const box = document.getElementById('message-box');
+            box.textContent = text;
+            box.className = 'p-4 mb-6 rounded-lg text-sm';
+            if (type === 'error') {
+                box.classList.add('bg-red-900', 'text-red-300');
+            } else if (type === 'success') {
+                box.classList.add('bg-green-900', 'text-green-300');
+            } else if (type === 'info') {
+                box.classList.add('bg-blue-900', 'text-blue-300');
+            }
+            box.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 5000);
+        };
+
+        const setLoading = (isLoading) => {
+            const button = document.getElementById('submit-button');
+            if (isLoading) {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+                button.disabled = true;
+                button.classList.add('opacity-70', 'cursor-not-allowed');
+            } else {
+                button.innerHTML = '<i class="fas fa-rocket mr-2"></i>Complete Setup';
+                button.disabled = false;
+                button.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        };
+
+        // Initialize Firebase
+        const initialize = async () => {
+            try {
+                console.log("Initializing Firebase...");
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                console.log("Firebase initialized successfully");
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        console.log("User authenticated:", user.email, "UID:", user.uid);
+                        
+                        // Check if user already has a profile
+                        try {
+                            const userDoc = await getDoc(doc(db, "users", user.uid));
+                            if (userDoc.exists()) {
+                                const data = userDoc.data();
+                                console.log("Existing user data found:", data);
+                                if (data.profileCompleted) {
+                                    // Redirect to home page if profile already completed
+                                    showMessage("Profile already completed. Redirecting...", 'info');
+                                    setTimeout(() => {
+                                        window.location.href = '../homepage.html';
+                                    }, 2000);
+                                } else {
+                                    // Pre-fill with existing data if any
+                                    prefillForm(data);
+                                }
+                            } else {
+                                console.log("No existing user document found");
+                            }
+                        } catch (error) {
+                            console.error("Error checking user document:", error);
+                        }
+                    } else {
+                        // No user signed in, redirect to login
+                        showMessage("Please sign in first", 'error');
+                        setTimeout(() => {
+                            window.location.href = '../index.html';
+                        }, 2000);
+                    }
+                });
+
+                // Initialize interests
+                initializeInterests();
+
+                // Setup character counters
+                setupCharacterCounters();
+
+                // Setup username availability check
+                setupUsernameCheck();
+
+            } catch (error) {
+                console.error("Initialization failed:", error);
+                showMessage("Failed to initialize. Please refresh the page.", 'error');
+            }
+        };
+
+        // Pre-fill form with existing data
+        const prefillForm = (data) => {
+            try {
+                if (data.username) document.getElementById('username').value = data.username;
+                if (data.fullName) document.getElementById('full-name').value = data.fullName;
+                if (data.location) document.getElementById('location').value = data.location;
+                if (data.bio) {
+                    document.getElementById('bio').value = data.bio;
+                    updateCharCount('bio', 'bio-char-count', 250);
+                }
+                if (data.profileImage) {
+                    document.getElementById('profile-pic-preview').src = data.profileImage;
+                    // Find and select the corresponding avatar
+                    const avatar = avatarOptions.find(av => av.url === data.profileImage);
+                    if (avatar) {
+                        selectedAvatar = avatar.id;
+                        selectAvatar(avatar.id, data.profileImage);
+                    }
+                }
+                if (data.interests) {
+                    data.interests.forEach(interest => {
+                        selectedInterests.add(interest);
+                        const interestElement = document.querySelector(`[data-interest="${interest}"]`);
+                        if (interestElement) {
+                            interestElement.classList.add('selected');
+                            interestElement.classList.add('bg-cyan-500', 'border-cyan-500', 'text-gray-900');
+                        }
+                    });
+                }
+                if (data.social) {
+                    if (data.social.tiktok) document.getElementById('tiktok').value = data.social.tiktok;
+                    if (data.social.youtube) document.getElementById('youtube').value = data.social.youtube;
+                    if (data.social.instagram) document.getElementById('instagram').value = data.social.instagram;
+                }
+                if (data.privacy) {
+                    if (data.privacy.profileVisibility) {
+                        document.getElementById('profile-visibility').value = data.privacy.profileVisibility;
+                    }
+                    if (data.privacy.showEmail !== undefined) {
+                        document.getElementById('show-email').checked = data.privacy.showEmail;
+                    }
+                }
+            } catch (error) {
+                console.error("Error pre-filling form:", error);
+            }
+        };
+
+        // Initialize interests selection
+        const initializeInterests = () => {
+            try {
+                const container = document.getElementById('interests-container');
+                availableInterests.forEach(interest => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-cyan-500 hover:text-cyan-400 transition interest-tag';
+                    button.textContent = interest;
+                    button.setAttribute('data-interest', interest);
+                    button.onclick = () => toggleInterest(interest, button);
+                    container.appendChild(button);
+                });
+            } catch (error) {
+                console.error("Error initializing interests:", error);
+            }
+        };
+
+        // Toggle interest selection
+        window.toggleInterest = (interest, button) => {
+            try {
+                if (selectedInterests.has(interest)) {
+                    selectedInterests.delete(interest);
+                    button.classList.remove('selected', 'bg-cyan-500', 'border-cyan-500', 'text-gray-900');
+                    button.classList.add('border-gray-600', 'text-gray-300');
+                } else {
+                    if (selectedInterests.size >= 5) {
+                        showMessage("You can select up to 5 interests", 'info');
+                        return;
+                    }
+                    selectedInterests.add(interest);
+                    button.classList.add('selected', 'bg-cyan-500', 'border-cyan-500', 'text-gray-900');
+                    button.classList.remove('border-gray-600', 'text-gray-300');
+                }
+            } catch (error) {
+                console.error("Error toggling interest:", error);
+            }
+        };
+
+        // Add custom interest
+        window.addCustomInterest = () => {
+            try {
+                const input = document.getElementById('custom-interest');
+                const interest = input.value.trim();
+                
+                if (!interest) {
+                    showMessage("Please enter an interest", 'error');
+                    return;
+                }
+                
+                if (interest.length > 20) {
+                    showMessage("Interest must be less than 20 characters", 'error');
+                    return;
+                }
+                
+                if (selectedInterests.has(interest)) {
+                    showMessage("This interest is already selected", 'info');
+                    return;
+                }
+                
+                if (selectedInterests.size >= 5) {
+                    showMessage("You can select up to 5 interests", 'info');
+                    return;
+                }
+                
+                selectedInterests.add(interest);
+                
+                // Add to UI
+                const container = document.getElementById('interests-container');
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'px-4 py-2 rounded-full bg-cyan-500 border border-cyan-500 text-gray-900 interest-tag selected';
+                button.textContent = interest;
+                button.setAttribute('data-interest', interest);
+                button.onclick = () => toggleInterest(interest, button);
+                container.appendChild(button);
+                
+                input.value = '';
+                showMessage(`Added "${interest}" to interests`, 'success');
+            } catch (error) {
+                console.error("Error adding custom interest:", error);
+                showMessage("Error adding interest", 'error');
+            }
+        };
+
+        // Setup character counters
+        const setupCharacterCounters = () => {
+            try {
+                // Username counter
+                const usernameInput = document.getElementById('username');
+                const charCount = document.getElementById('char-count');
+                
+                usernameInput.addEventListener('input', () => {
+                    const count = usernameInput.value.length;
+                    charCount.textContent = `${count}/20`;
+                    charCount.className = count >= 20 ? 'text-red-400' : 'text-gray-400';
+                });
+
+                // Bio counter
+                const bioInput = document.getElementById('bio');
+                const bioCharCount = document.getElementById('bio-char-count');
+                
+                bioInput.addEventListener('input', () => {
+                    updateCharCount('bio', 'bio-char-count', 250);
+                });
+
+                // Initialize counters
+                updateCharCount('username', 'char-count', 20);
+                updateCharCount('bio', 'bio-char-count', 250);
+            } catch (error) {
+                console.error("Error setting up character counters:", error);
+            }
+        };
+
+        const updateCharCount = (inputId, counterId, maxLength) => {
+            try {
+                const input = document.getElementById(inputId);
+                const counter = document.getElementById(counterId);
+                const count = input.value.length;
+                counter.textContent = `${count}/${maxLength}`;
+                counter.className = count >= maxLength ? 'text-red-400' : 'text-gray-400';
+            } catch (error) {
+                console.error("Error updating character count:", error);
+            }
+        };
+
+        // Setup username availability check
+        const setupUsernameCheck = () => {
+            try {
+                const usernameInput = document.getElementById('username');
+                const usernameStatus = document.getElementById('username-status');
+                
+                let checkTimeout;
+                
+                usernameInput.addEventListener('input', async () => {
+                    const username = usernameInput.value.trim();
+                    
+                    if (username.length < 3) {
+                        usernameStatus.textContent = "Username must be at least 3 characters";
+                        usernameStatus.className = "text-gray-400";
+                        return;
+                    }
+                    
+                    if (username.length > 20) {
+                        usernameStatus.textContent = "Username too long (max 20 characters)";
+                        usernameStatus.className = "text-red-400";
+                        return;
+                    }
+                    
+                    // Clear previous timeout
+                    if (checkTimeout) {
+                        clearTimeout(checkTimeout);
+                    }
+                    
+                    // Debounce the check
+                    checkTimeout = setTimeout(async () => {
+                        usernameStatus.textContent = "Checking availability...";
+                        usernameStatus.className = "text-blue-400";
+                        
+                        try {
+                            const usernameTaken = await checkUsernameAvailability(username);
+                            
+                            if (usernameTaken) {
+                                usernameStatus.textContent = "Username already taken";
+                                usernameStatus.className = "text-red-400";
+                            } else {
+                                usernameStatus.textContent = "Username available";
+                                usernameStatus.className = "text-green-400";
+                            }
+                        } catch (error) {
+                            usernameStatus.textContent = "Error checking username";
+                            usernameStatus.className = "text-red-400";
+                            console.error("Username check error:", error);
+                        }
+                    }, 500);
+                });
+            } catch (error) {
+                console.error("Error setting up username check:", error);
+            }
+        };
+
+        // Check if username is available
+        const checkUsernameAvailability = async (username) => {
+            if (!username || username.length < 3) return false;
+            
+            try {
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("username", "==", username));
+                const querySnapshot = await getDocs(q);
+                
+                // If current user has this username, it's still available for them
+                if (currentUser && querySnapshot.docs.some(doc => doc.id === currentUser.uid)) {
+                    return false;
+                }
+                
+                return !querySnapshot.empty;
+            } catch (error) {
+                console.error("Error checking username:", error);
+                return false;
+            }
+        };
+
+        // Handle image upload
+        window.handleImageUpload = (event) => {
+            try {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                        showMessage("Image size should be less than 5MB", 'error');
+                        return;
+                    }
+                    
+                    if (!file.type.startsWith('image/')) {
+                        showMessage("Please select an image file", 'error');
+                        return;
+                    }
+                    
+                    profileImageFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('profile-pic-preview').src = e.target.result;
+                        // Reset avatar selection
+                        document.querySelectorAll('.avatar-avatar').forEach(el => el.classList.remove('selected'));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } catch (error) {
+                console.error("Error handling image upload:", error);
+                showMessage("Error uploading image", 'error');
+            }
+        };
+
+        // Select avatar
+        window.selectAvatar = (avatarId, avatarUrl) => {
+            try {
+                selectedAvatar = avatarId;
+                const avatar = avatarOptions.find(av => av.id === avatarId);
+                if (avatar) {
+                    // Update preview
+                    document.getElementById('profile-pic-preview').src = avatarUrl;
+                    
+                    // Update selection UI
+                    document.querySelectorAll('.avatar-avatar').forEach(el => el.classList.remove('selected'));
+                    const avatarElement = document.querySelector(`[data-id="${avatarId}"]`);
+                    if (avatarElement) {
+                        avatarElement.classList.add('selected');
+                    }
+                    
+                    // Clear file input
+                    document.getElementById('profile-picture').value = '';
+                    profileImageFile = null;
+                    
+                    showMessage(`Selected ${avatar.name}`, 'success');
+                }
+            } catch (error) {
+                console.error("Error selecting avatar:", error);
+            }
+        };
+
+        // Skip profile setup
+        window.skipProfileSetup = async () => {
+            if (!currentUser) {
+                showMessage("Please sign in first", 'error');
+                return;
+            }
+            
+            try {
+                setLoading(true);
+                
+                // Create a default username from email
+                const defaultUsername = currentUser.email.split('@')[0] + Math.floor(Math.random() * 1000);
+                
+                // Save minimal profile data
+                const userData = {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    username: defaultUsername,
+                    profileImage: '../lib/images/avatar1.jpg', // Use first avatar as default
+                    interests: [],
+                    profileCompleted: true,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                console.log("Skipping profile - Saving data:", userData);
+                await setDoc(doc(db, "users", currentUser.uid), userData, { merge: true });
+                
+                showMessage("Profile created with default settings. Redirecting...", 'success');
+                
+                setTimeout(() => {
+                    window.location.href = '../homepage.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error("Error skipping profile:", error);
+                showMessage(`Failed to save profile: ${error.message}`, 'error');
+                setLoading(false);
+            }
+        };
+
+        // Handle form submission
+        document.getElementById('profile-setup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showMessage("You must be logged in to complete profile setup", 'error');
+                return;
+            }
+
+            const username = document.getElementById('username').value.trim();
+            const fullName = document.getElementById('full-name').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const tiktok = document.getElementById('tiktok').value.trim();
+            const youtube = document.getElementById('youtube').value.trim();
+            const instagram = document.getElementById('instagram').value.trim();
+            const profileVisibility = document.getElementById('profile-visibility').value;
+            const showEmail = document.getElementById('show-email').checked;
+
+            // Validation
+            if (!username || username.length < 3) {
+                showMessage("Username must be at least 3 characters", 'error');
+                return;
+            }
+
+            if (username.length > 20) {
+                showMessage("Username cannot exceed 20 characters", 'error');
+                return;
+            }
+
+            // Check username availability
+            let usernameTaken = false;
+            try {
+                usernameTaken = await checkUsernameAvailability(username);
+            } catch (error) {
+                console.error("Error checking username availability:", error);
+                showMessage("Error checking username availability", 'error');
+                return;
+            }
+            
+            if (usernameTaken) {
+                showMessage("Username is already taken. Please choose another one.", 'error');
+                return;
+            }
+
+            if (selectedInterests.size === 0) {
+                showMessage("Please select at least one interest", 'error');
+                return;
+            }
+
+            if (selectedInterests.size > 5) {
+                showMessage("You can select up to 5 interests", 'error');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                // Get profile image URL
+                let profileImageUrl;
+                if (profileImageFile) {
+                    // Use uploaded image
+                    const reader = new FileReader();
+                    profileImageUrl = await new Promise((resolve, reject) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(profileImageFile);
+                    });
+                } else {
+                    // Use selected avatar
+                    const avatar = avatarOptions.find(av => av.id === selectedAvatar);
+                    profileImageUrl = avatar ? avatar.url : '../lib/images/avatar1.jpg';
+                }
+
+                // Prepare user data with TikTok, YouTube, Instagram
+                const userData = {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    username: username,
+                    fullName: fullName || null,
+                    location: location || null,
+                    bio: bio || null,
+                    profileImage: profileImageUrl,
+                    interests: Array.from(selectedInterests),
+                    social: {
+                        tiktok: tiktok || null,
+                        youtube: youtube || null,
+                        instagram: instagram || null
+                    },
+                    privacy: {
+                        profileVisibility: profileVisibility,
+                        showEmail: showEmail
+                    },
+                    profileCompleted: true,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                console.log("Attempting to save user data to Firestore:", userData);
+
+                // Save to Firestore
+                await setDoc(doc(db, "users", currentUser.uid), userData, { merge: true });
+                console.log("Successfully saved user data to Firestore");
+
+                showMessage("Profile setup complete! Redirecting to homepage...", 'success');
+                
+                // Redirect to home page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '../homepage.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error("Error saving profile to Firestore:", error);
+                console.error("Error details:", {
+                    name: error.name,
+                    message: error.message,
+                    code: error.code,
+                    stack: error.stack
+                });
+                
+                // Try to provide more specific error messages
+                let errorMessage = "Failed to save profile";
+                if (error.code === 'permission-denied') {
+                    errorMessage = "Permission denied. Please check Firestore security rules.";
+                } else if (error.code === 'unavailable') {
+                    errorMessage = "Network error. Please check your internet connection.";
+                } else {
+                    errorMessage = `Failed to save profile: ${error.message}`;
+                }
+                
+                showMessage(errorMessage, 'error');
+                setLoading(false);
+            }
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initialize);
+
+    </script>
+</body>
+</html>

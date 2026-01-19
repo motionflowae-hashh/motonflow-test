@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - Motion-Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-dark: #0a0a12;
+      --color-bg: #0f0f1a;
+      --color-bg-light: #1a1a2e;
+      --color-primary: #00bcd4;
+      --color-accent: #00bcd4;
+      --color-accent-alt: #f97316;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-body);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { 
+      color: var(--color-accent);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 20px 120px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .edit-profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .edit-header-section {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 0 10px;
+    }
+
+    .edit-header-section h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8em, 5vw, 2.5em);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .edit-header-section p {
+      color: var(--color-text-muted);
+      font-size: clamp(0.9em, 3vw, 1em);
+      opacity: 0.8;
+    }
+
+    /* Profile Picture Section */
+    .profile-picture-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .profile-picture-container {
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .profile-picture-preview {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 3px solid var(--color-accent);
+      background: linear-gradient(135deg, #0a0a2a, #1a1a3a);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 188, 212, 0.3);
+    }
+
+    .profile-picture-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-picture-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 50%;
+    }
+
+    .profile-picture-container:hover .profile-picture-overlay {
+      opacity: 1;
+    }
+
+    .profile-picture-overlay i {
+      color: white;
+      font-size: 2em;
+    }
+
+    .picture-upload-text {
+      color: var(--color-accent);
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .picture-upload-text:hover {
+      color: var(--color-accent-alt);
+      text-decoration: underline;
+    }
+
+    /* Edit Form */
+    .edit-form {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 1.3em;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      color: var(--color-text);
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95em;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    .form-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      font-size: 1em;
+      resize: vertical;
+      min-height: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    .form-help {
+      display: block;
+      color: var(--color-text-muted);
+      font-size: 0.85em;
+      margin-top: 6px;
+    }
+
+    .cooldown-message {
+      color: var(--color-accent-alt);
+      font-size: 0.85em;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Interests */
+    .interests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .interest-option {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 8px 12px;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    .interest-option:hover {
+      border-color: var(--color-accent);
+    }
+
+    .interest-option.selected {
+      background: rgba(0, 188, 212, 0.2);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    /* Social Links */
+    .social-input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2em;
+      flex-shrink: 0;
+    }
+
+    .social-icon.tiktok {
+      background: #000000;
+    }
+    .social-icon.youtube {
+      background: #FF0000;
+    }
+    .social-icon.instagram {
+      background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+    }
+
+    /* Privacy Options */
+    .privacy-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .privacy-option {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .privacy-option:hover {
+      border-color: var(--color-accent);
+    }
+
+    .privacy-option.selected {
+      background: rgba(0, 188, 212, 0.2);
+      border-color: var(--color-accent);
+    }
+
+    .privacy-option .option-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .privacy-option .option-desc {
+      font-size: 0.8em;
+      color: var(--color-text-muted);
+    }
+
+    /* Switch Toggle */
+    .switch-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--color-accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 0.95em;
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      color: var(--color-dark);
+    }
+
+    .btn-primary:hover {
+      background: rgba(0, 188, 212, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Message Box */
+    .message-box {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .message-box.success {
+      background: rgba(0, 200, 83, 0.1);
+      border: 1px solid rgba(0, 200, 83, 0.3);
+      color: #00c853;
+      display: block;
+    }
+
+    .message-box.error {
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      color: #f44336;
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 70px 15px 100px;
+      }
+      
+      .edit-form {
+        padding: 20px;
+      }
+      
+      .interests-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+      
+      .privacy-options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 70px 10px 90px;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .profile-picture-preview {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="back-btn" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <div class="edit-profile-container">
+      <div class="edit-header-section">
+        <h1>Edit Profile</h1>
+        <p>Update your profile information and settings</p>
+      </div>
+
+      <!-- Message Box -->
+      <div id="messageBox" class="message-box"></div>
+
+      <!-- Profile Picture Section -->
+      <div class="profile-picture-section">
+        <div class="profile-picture-container" onclick="document.getElementById('profilePictureInput').click()">
+          <div class="profile-picture-preview" id="profilePicturePreview">
+            <!-- Profile picture will be loaded here -->
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--color-accent);">
+              <i class="fas fa-user" style="font-size: 4em;"></i>
+            </div>
+          </div>
+          <div class="profile-picture-overlay">
+            <i class="fas fa-camera"></i>
+          </div>
+        </div>
+        <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+        <div class="picture-upload-text" onclick="document.getElementById('profilePictureInput').click()">
+          Change Profile Picture
+        </div>
+        <div class="form-help">Click on the picture or text to upload a new profile picture</div>
+      </div>
+
+      <!-- Edit Form -->
+      <form id="editProfileForm" class="edit-form">
+        <!-- Basic Information -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-user"></i>
+            Basic Information
+          </div>
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label" for="fullName">Full Name</label>
+            <input type="text" id="fullName" class="form-input" placeholder="Your full name">
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label class="form-label" for="location">Location</label>
+            <input type="text" id="location" class="form-input" placeholder="City, Country">
+          </div>
+
+          <!-- Bio -->
+          <div class="form-group">
+            <label class="form-label" for="bio">Bio</label>
+            <textarea id="bio" class="form-textarea" placeholder="Tell others about yourself..." maxlength="250"></textarea>
+            <span class="form-help" id="bioCounter">0/250</span>
+          </div>
+        </div>
+
+        <!-- Username & Nickname -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-at"></i>
+            Username & Nickname
+          </div>
+
+          <!-- Username -->
+          <div class="form-group">
+            <label class="form-label" for="username">Username</label>
+            <input type="text" id="username" class="form-input" placeholder="Choose a username" maxlength="20">
+            <div class="cooldown-message" id="usernameCooldown" style="display: none;">
+              <i class="fas fa-clock"></i>
+              <span id="usernameCooldownText"></span>
+            </div>
+            <span class="form-help">Unique identifier. Can be changed every 20 days.</span>
+          </div>
+
+          <!-- Nickname -->
+          <div class="form-group">
+            <label class="form-label" for="nickname">Nickname</label>
+            <input type="text" id="nickname" class="form-input" placeholder="Your display name" maxlength="30">
+            <div class="cooldown-message" id="nicknameCooldown" style="display: none;">
+              <i class="fas fa-clock"></i>
+              <span id="nicknameCooldownText"></span>
+            </div>
+            <span class="form-help">Display name visible to others. Can be changed every 10 days.</span>
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-heart"></i>
+            Interests
+          </div>
+          <div class="form-group">
+            <label class="form-label">Select up to 5 interests</label>
+            <div class="interests-grid" id="interestsGrid">
+              <!-- Interests will be populated by JavaScript -->
+            </div>
+            <span class="form-help" id="interestsCounter">0/5 selected</span>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-share-alt"></i>
+            Social Links
+          </div>
+
+          <!-- TikTok -->
+          <div class="social-input-group">
+            <div class="social-icon tiktok">
+              <i class="fab fa-tiktok"></i>
+            </div>
+            <input type="text" id="tiktok" class="form-input" placeholder="TikTok username (without @)">
+          </div>
+
+          <!-- YouTube -->
+          <div class="social-input-group">
+            <div class="social-icon youtube">
+              <i class="fab fa-youtube"></i>
+            </div>
+            <input type="text" id="youtube" class="form-input" placeholder="YouTube username or channel URL">
+          </div>
+
+          <!-- Instagram -->
+          <div class="social-input-group">
+            <div class="social-icon instagram">
+              <i class="fab fa-instagram"></i>
+            </div>
+            <input type="text" id="instagram" class="form-input" placeholder="Instagram username (without @)">
+          </div>
+        </div>
+
+        <!-- Privacy Settings -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-shield-alt"></i>
+            Privacy Settings
+          </div>
+
+          <!-- Profile Visibility -->
+          <div class="form-group">
+            <label class="form-label">Profile Visibility</label>
+            <div class="privacy-options">
+              <div class="privacy-option" data-value="public">
+                <div class="option-title">Public</div>
+                <div class="option-desc">Anyone can see your profile</div>
+              </div>
+              <div class="privacy-option" data-value="friends">
+                <div class="option-title">Friends Only</div>
+                <div class="option-desc">Only your friends can see</div>
+              </div>
+              <div class="privacy-option" data-value="private">
+                <div class="option-title">Private</div>
+                <div class="option-desc">Only you can see</div>
+              </div>
+            </div>
+            <input type="hidden" id="profileVisibility" value="public">
+          </div>
+
+          <!-- Email Visibility -->
+          <div class="switch-group">
+            <div>
+              <label class="form-label">Show Email on Profile</label>
+              <div class="form-help">Allow others to see your email address</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="showEmail">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='profile.html'">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" id="saveButton">
+            <i class="fas fa-save"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      getDoc, 
+      doc,
+      updateDoc,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { 
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+    import { 
+      onAuthStateChanged, 
+      getAuth
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+      authDomain: "motion-flow-47450.firebasestorage.app",
+      databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+      projectId: "motion-flow-47450",
+      storageBucket: "motion-flow-47450.firebasestorage.app",
+      messagingSenderId: "686875529848",
+      appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+      measurementId: "G-K46N8C1HFQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // DOM Elements
+    const editForm = document.getElementById("editProfileForm");
+    const messageBox = document.getElementById("messageBox");
+    const saveButton = document.getElementById("saveButton");
+    const bioCounter = document.getElementById("bioCounter");
+    const interestsCounter = document.getElementById("interestsCounter");
+    const usernameCooldown = document.getElementById("usernameCooldown");
+    const nicknameCooldown = document.getElementById("nicknameCooldown");
+    const usernameCooldownText = document.getElementById("usernameCooldownText");
+    const nicknameCooldownText = document.getElementById("nicknameCooldownText");
+    const profilePictureInput = document.getElementById("profilePictureInput");
+    const profilePicturePreview = document.getElementById("profilePicturePreview");
+
+    // Available interests
+    const availableInterests = [
+      "Animation", "Motion Design", "Visual Effects", "3D Modeling", "Graphic Design",
+      "Video Editing", "Cinematography", "Typography", "UI/UX Design", "Illustration",
+      "Sound Design", "Color Grading", "Storyboarding", "Character Design", "Augmented Reality"
+    ];
+
+    let currentUserId = null;
+    let currentUserData = null;
+    let selectedInterests = new Set();
+    let canChangeUsername = true;
+    let canChangeNickname = true;
+    let usernameLastChanged = null;
+    let nicknameLastChanged = null;
+    let profileImageFile = null;
+
+    // Initialize interests grid
+    function initializeInterests() {
+      const interestsGrid = document.getElementById("interestsGrid");
+      interestsGrid.innerHTML = '';
+
+      availableInterests.forEach(interest => {
+        const interestOption = document.createElement('div');
+        interestOption.className = 'interest-option';
+        interestOption.textContent = interest;
+        interestOption.dataset.interest = interest;
+
+        if (selectedInterests.has(interest)) {
+          interestOption.classList.add('selected');
+        }
+
+        interestOption.addEventListener('click', () => {
+          if (interestOption.classList.contains('selected')) {
+            interestOption.classList.remove('selected');
+            selectedInterests.delete(interest);
+          } else {
+            if (selectedInterests.size >= 5) {
+              showMessage("You can select up to 5 interests", 'error');
+              return;
+            }
+            interestOption.classList.add('selected');
+            selectedInterests.add(interest);
+          }
+          updateInterestsCounter();
+        });
+
+        interestsGrid.appendChild(interestOption);
+      });
+    }
+
+    // Update interests counter
+    function updateInterestsCounter() {
+      interestsCounter.textContent = `${selectedInterests.size}/5 selected`;
+    }
+
+    // Update bio counter
+    function updateBioCounter() {
+      const bio = document.getElementById("bio");
+      bioCounter.textContent = `${bio.value.length}/250`;
+    }
+
+    // Show message
+    function showMessage(text, type = 'success') {
+      messageBox.textContent = text;
+      messageBox.className = `message-box ${type}`;
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          messageBox.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    // Calculate remaining days
+    function getRemainingDays(lastChangeDate, cooldownDays) {
+      if (!lastChangeDate) return 0;
+      
+      const lastChange = new Date(lastChangeDate);
+      const now = new Date();
+      const diffTime = Math.abs(now - lastChange);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const remaining = cooldownDays - diffDays;
+      
+      return remaining > 0 ? remaining : 0;
+    }
+
+    // Check cooldowns
+    function checkCooldowns(userData) {
+      if (userData.lastChanged) {
+        const usernameRemaining = getRemainingDays(userData.lastChanged.username, 20);
+        const nicknameRemaining = getRemainingDays(userData.lastChanged.nickname, 10);
+        
+        canChangeUsername = usernameRemaining === 0;
+        canChangeNickname = nicknameRemaining === 0;
+        
+        usernameLastChanged = userData.lastChanged.username;
+        nicknameLastChanged = userData.lastChanged.nickname;
+
+        if (usernameRemaining > 0) {
+          usernameCooldown.style.display = 'flex';
+          usernameCooldownText.textContent = `Can change username in ${usernameRemaining} day${usernameRemaining !== 1 ? 's' : ''}`;
+          document.getElementById("username").disabled = true;
+        }
+
+        if (nicknameRemaining > 0) {
+          nicknameCooldown.style.display = 'flex';
+          nicknameCooldownText.textContent = `Can change nickname in ${nicknameRemaining} day${nicknameRemaining !== 1 ? 's' : ''}`;
+          document.getElementById("nickname").disabled = true;
+        }
+      }
+    }
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUserId));
+        
+        if (userDoc.exists()) {
+          currentUserData = userDoc.data();
+          
+          // Fill form with current data
+          document.getElementById("fullName").value = currentUserData.fullName || "";
+          document.getElementById("location").value = currentUserData.location || "";
+          document.getElementById("bio").value = currentUserData.bio || "";
+          document.getElementById("username").value = currentUserData.username || "";
+          document.getElementById("nickname").value = currentUserData.nickname || "";
+          
+          // Set social links
+          if (currentUserData.social) {
+            document.getElementById("tiktok").value = currentUserData.social.tiktok || "";
+            document.getElementById("youtube").value = currentUserData.social.youtube || "";
+            document.getElementById("instagram").value = currentUserData.social.instagram || "";
+          }
+          
+          // Set profile picture
+          if (currentUserData.profileImage) {
+            profilePicturePreview.innerHTML = `<img src="${currentUserData.profileImage}" alt="Profile Picture">`;
+          }
+          
+          // Set interests
+          if (currentUserData.interests && Array.isArray(currentUserData.interests)) {
+            selectedInterests = new Set(currentUserData.interests);
+          }
+          
+          // Set privacy settings
+          if (currentUserData.privacy) {
+            document.getElementById("profileVisibility").value = currentUserData.privacy.profileVisibility || "public";
+            document.getElementById("showEmail").checked = currentUserData.privacy.showEmail || false;
+            
+            // Set active privacy option
+            document.querySelectorAll('.privacy-option').forEach(option => {
+              if (option.dataset.value === currentUserData.privacy.profileVisibility) {
+                option.classList.add('selected');
+              } else {
+                option.classList.remove('selected');
+              }
+            });
+          }
+          
+          // Check cooldowns
+          checkCooldowns(currentUserData);
+          
+          // Initialize UI
+          initializeInterests();
+          updateInterestsCounter();
+          updateBioCounter();
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        showMessage("Error loading profile data", 'error');
+      }
+    }
+
+    // Handle profile picture upload
+    function handleProfilePictureUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showMessage("Please select an image file", 'error');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showMessage("Image must be less than 5MB", 'error');
+        return;
+      }
+      
+      profileImageFile = file;
+      
+      // Preview the image
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        profilePicturePreview.innerHTML = `<img src="${e.target.result}" alt="Profile Picture">`;
+      };
+      reader.readAsDataURL(file);
+      
+      showMessage("Profile picture selected. Click 'Save Changes' to update.", 'success');
+    }
+
+    // Upload profile picture to Firebase Storage
+    async function uploadProfilePicture(userId) {
+      if (!profileImageFile) return null;
+      
+      try {
+        // Create a reference to the profile picture
+        const storageRef = ref(storage, `profile-pictures/${userId}/${Date.now()}_${profileImageFile.name}`);
+        
+        // Upload the file
+        await uploadBytes(storageRef, profileImageFile);
+        
+        // Get the download URL
+        const downloadURL = await getDownloadURL(storageRef);
+        
+        return downloadURL;
+      } catch (error) {
+        console.error("Error uploading profile picture:", error);
+        throw error;
+      }
+    }
+
+    // Check username availability
+    async function checkUsernameAvailability(username) {
+      if (!username || username === currentUserData.username) return true;
+      
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+        
+        return querySnapshot.empty;
+      } catch (error) {
+        console.error("Error checking username:", error);
+        return false;
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Profile picture upload
+      profilePictureInput.addEventListener('change', handleProfilePictureUpload);
+      
+      // Bio counter
+      document.getElementById("bio").addEventListener("input", updateBioCounter);
+      
+      // Privacy options
+      document.querySelectorAll('.privacy-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.privacy-option').forEach(opt => {
+            opt.classList.remove('selected');
+          });
+          option.classList.add('selected');
+          document.getElementById("profileVisibility").value = option.dataset.value;
+        });
+      });
+      
+      // Form submission
+      editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const fullName = document.getElementById("fullName").value.trim();
+        const location = document.getElementById("location").value.trim();
+        const bio = document.getElementById("bio").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const nickname = document.getElementById("nickname").value.trim();
+        const tiktok = document.getElementById("tiktok").value.trim();
+        const youtube = document.getElementById("youtube").value.trim();
+        const instagram = document.getElementById("instagram").value.trim();
+        const profileVisibility = document.getElementById("profileVisibility").value;
+        const showEmail = document.getElementById("showEmail").checked;
+        
+        // Validate username if changed
+        if (username !== currentUserData.username) {
+          if (!canChangeUsername) {
+            showMessage("Username can only be changed every 20 days", 'error');
+            return;
+          }
+          
+          if (username.length < 3) {
+            showMessage("Username must be at least 3 characters", 'error');
+            return;
+          }
+          
+          if (username.length > 20) {
+            showMessage("Username cannot exceed 20 characters", 'error');
+            return;
+          }
+          
+          const isAvailable = await checkUsernameAvailability(username);
+          if (!isAvailable) {
+            showMessage("Username is already taken", 'error');
+            return;
+          }
+        }
+        
+        // Validate nickname if changed
+        if (nickname !== currentUserData.nickname) {
+          if (!canChangeNickname) {
+            showMessage("Nickname can only be changed every 10 days", 'error');
+            return;
+          }
+          
+          if (nickname.length > 30) {
+            showMessage("Nickname cannot exceed 30 characters", 'error');
+            return;
+          }
+        }
+        
+        // Validate interests
+        if (selectedInterests.size === 0) {
+          showMessage("Please select at least one interest", 'error');
+          return;
+        }
+        
+        if (selectedInterests.size > 5) {
+          showMessage("You can select up to 5 interests", 'error');
+          return;
+        }
+        
+        // Show loading
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        saveButton.disabled = true;
+        
+        try {
+          // Prepare update data
+          const updateData = {
+            fullName: fullName || null,
+            location: location || null,
+            bio: bio || null,
+            interests: Array.from(selectedInterests),
+            social: {
+              tiktok: tiktok || null,
+              youtube: youtube || null,
+              instagram: instagram || null
+            },
+            privacy: {
+              profileVisibility: profileVisibility,
+              showEmail: showEmail
+            },
+            updatedAt: new Date().toISOString()
+          };
+          
+          // Upload profile picture if selected
+          if (profileImageFile) {
+            try {
+              const profileImageUrl = await uploadProfilePicture(currentUserId);
+              updateData.profileImage = profileImageUrl;
+            } catch (error) {
+              console.error("Failed to upload profile picture:", error);
+              showMessage("Profile picture upload failed, but other changes saved", 'error');
+            }
+          }
+          
+          // Update username if changed
+          if (username !== currentUserData.username && canChangeUsername) {
+            updateData.username = username;
+            updateData.lastChanged = {
+              ...currentUserData.lastChanged,
+              username: new Date().toISOString()
+            };
+          }
+          
+          // Update nickname if changed
+          if (nickname !== currentUserData.nickname && canChangeNickname) {
+            updateData.nickname = nickname;
+            updateData.lastChanged = {
+              ...(updateData.lastChanged || currentUserData.lastChanged),
+              nickname: new Date().toISOString()
+            };
+          }
+          
+          // Ensure lastChanged structure exists
+          if (!updateData.lastChanged) {
+            updateData.lastChanged = currentUserData.lastChanged || {};
+          }
+          
+          // Save to Firestore
+          await updateDoc(doc(db, "users", currentUserId), updateData);
+          
+          showMessage("Profile updated successfully!", 'success');
+          saveButton.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+          saveButton.disabled = false;
+          
+          // Redirect back to profile after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'profile.html';
+          }, 2000);
+          
+        } catch (error) {
+          console.error("Error updating profile:", error);
+          showMessage("Error updating profile: " + error.message, 'error');
+          saveButton.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+          saveButton.disabled = false;
+        }
+      });
+    }
+
+    // Auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        console.log('👤 User authenticated:', currentUserId);
+        
+        // Check if user has completed profile setup
+        const userDoc = await getDoc(doc(db, "users", currentUserId));
+        if (!userDoc.exists() || !userDoc.data().profileCompleted) {
+          window.location.href = 'profile-setup.html';
+          return;
+        }
+        
+        await loadUserData();
+        setupEventListeners();
+      } else {
+        window.location.href = "../index.html";
+      }
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Edit profile page loaded');
+    });
+  </script>
+</body>
+</html>

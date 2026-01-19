@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users - Motion-Flow</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-dark: #0a0a12;
+      --color-bg: #0f0f1a;
+      --color-bg-light: #1a1a2e;
+      --color-primary: #00bcd4;
+      --color-accent: #00bcd4;
+      --color-accent-alt: #f97316;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-error: #ef4444;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-body);
+    }
+
+    html, body {
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.8em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+      z-index: 1003;
+    }
+
+    .menu-btn:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { 
+      color: var(--color-accent);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      box-shadow: 2px 0 20px rgba(0, 188, 212, 0.2);
+      backdrop-filter: blur(10px);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      padding: 80px 25px 30px;
+      background: rgba(15, 17, 30, 0.95);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+      text-align: center;
+    }
+
+    .sidebar-nav {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      padding: 15px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: rgba(0, 188, 212, 0.3);
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(249, 115, 22, 0.1));
+      border-color: rgba(0, 188, 212, 0.4);
+    }
+
+    .nav-btn i {
+      color: var(--color-accent);
+      font-size: 1.2em;
+      width: 24px;
+      text-align: center;
+    }
+
+    .notification-badge {
+      background: linear-gradient(135deg, #ff4757, #ff3742);
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 100px 20px 120px;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+
+    .header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-family: var(--font-heading);
+      font-size: 2.8em;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+    }
+
+    .header p {
+      color: var(--color-text-muted);
+      font-size: 1.1em;
+      opacity: 0.8;
+    }
+
+    .search-filter-section {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .search-filter-section {
+        flex-direction: column;
+      }
+    }
+
+    .search-container, .filter-container {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      flex: 1;
+      min-width: 300px;
+      transition: all 0.3s ease;
+    }
+
+    .search-container:hover, .filter-container:hover {
+      border-color: rgba(0, 188, 212, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .filter-label {
+      display: block;
+      color: var(--color-text);
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 1em;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      border-radius: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-tab:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: rgba(0, 188, 212, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .filter-tab.active {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+    }
+
+    /* Users Grid */
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .users-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .user-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 28px;
+      transition: all 0.3s ease;
+      position: relative;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 188, 212, 0.1);
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 188, 212, 0.3);
+      box-shadow: 0 12px 40px rgba(0, 188, 212, 0.25);
+    }
+
+    .user-status {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .user-status.online {
+      width: 12px;
+      height: 12px;
+      background: var(--color-success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+    }
+    
+    .user-status.offline {
+      width: auto;
+      height: auto;
+      background: rgba(102, 102, 102, 0.2);
+      border-radius: 20px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .status-text {
+      font-size: 0.75em;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid rgba(0, 188, 212, 0.3);
+      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+      transform: scale(1.05);
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 4px;
+    }
+
+    .user-role {
+      font-size: 0.85em;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    .user-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+    }
+
+    .user-stat {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .user-stat-value {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+
+    .user-stat-label {
+      font-size: 0.7em;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .user-bio {
+      color: var(--color-text-muted);
+      font-size: 0.9em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .follow-btn, .view-profile-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .follow-btn {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+    }
+
+    .follow-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--color-accent-alt), var(--color-accent));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+    }
+
+    .follow-btn.following {
+      background: rgba(0, 188, 212, 0.15);
+      color: var(--color-accent);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+    }
+
+    .follow-btn.following:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--color-error);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .follow-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .view-profile-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--color-text);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .view-profile-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: var(--color-accent);
+      transform: translateY(-2px);
+    }
+
+    /* Loading Animation */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(0, 188, 212, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--color-accent);
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      color: var(--color-text-muted);
+      font-size: 1.1em;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--color-text-muted);
+      grid-column: 1 / -1;
+    }
+
+    .empty-icon {
+      font-size: 4em;
+      color: rgba(0, 188, 212, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: var(--color-text);
+    }
+
+    .empty-state p {
+      font-size: 1.1em;
+      opacity: 0.8;
+    }
+
+    /* Bottom Navigation - Matches Homepage */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      z-index: 990;
+      background: rgba(10, 10, 18, 0.7);
+      backdrop-filter: blur(25px) saturate(150%);
+      -webkit-backdrop-filter: blur(25px) saturate(150%);
+      border-top: 1px solid rgba(0, 188, 212, 0.3);
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5), 0 -2px 10px rgba(0, 188, 212, 0.1);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-text-muted);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+      transition: color 0.3s;
+    }
+
+    .nav-item.active {
+      color: var(--color-primary);
+      transform: scale(1.05);
+    }
+
+    .nav-item.active i {
+      color: var(--color-primary);
+      text-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+    }
+
+    .nav-item:hover {
+      color: var(--color-primary);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 5, 26, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: rgba(15, 17, 30, 0.95);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      border-radius: 24px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s ease;
+      box-shadow: 0 20px 60px rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--color-error);
+      transform: rotate(90deg);
+    }
+
+    .modal-close i {
+      color: var(--color-text);
+      font-size: 1.2em;
+    }
+
+    .modal-header {
+      padding: 40px 40px 30px;
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .modal-profile-section {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .modal-profile-pic {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid rgba(0, 188, 212, 0.3);
+      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 188, 212, 0.3);
+      overflow: hidden;
+    }
+
+    .modal-profile-info {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .modal-info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 8px;
+    }
+
+    .modal-info-label {
+      color: var(--color-text-muted);
+      font-weight: 600;
+      min-width: 100px;
+      text-transform: uppercase;
+      font-size: 0.75em;
+      letter-spacing: 1px;
+    }
+
+    .modal-info-value {
+      color: var(--color-text);
+      font-weight: 500;
+      font-size: 1em;
+    }
+
+    .modal-body {
+      padding: 30px 40px;
+    }
+
+    .modal-section {
+      margin-bottom: 30px;
+    }
+
+    .modal-section-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--color-accent);
+      letter-spacing: -0.5px;
+    }
+
+    .modal-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .modal-stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      border-radius: 12px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-stat-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(0, 188, 212, 0.4);
+    }
+
+    .modal-stat-value {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 6px;
+    }
+
+    .modal-stat-label {
+      font-size: 0.8em;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    .modal-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .modal-tool-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .modal-tool-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(0, 188, 212, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .modal-tool-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .modal-tool-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .modal-tool-name {
+      font-size: 1.1em;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .modal-tool-desc {
+      color: var(--color-text-muted);
+      font-size: 0.85em;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    .modal-tool-downloads {
+      color: var(--color-success);
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 17, 30, 0.95);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      z-index: 2001;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.3s ease;
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 80px 15px 100px;
+      }
+      
+      .header h1 {
+        font-size: 2.2em;
+      }
+      
+      .modal-content {
+        border-radius: 16px;
+        max-height: 95vh;
+      }
+      
+      .modal-header,
+      .modal-body {
+        padding: 24px 20px;
+      }
+      
+      .modal-profile-section {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .modal-profile-pic {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .modal-stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 1.8em;
+      }
+      
+      .filter-tabs {
+        gap: 8px;
+      }
+      
+      .filter-tab {
+        padding: 10px 16px;
+        font-size: 0.85em;
+      }
+      
+      .user-card {
+        padding: 20px;
+      }
+      
+      .user-stats {
+        gap: 12px;
+        padding: 12px;
+      }
+      
+      .user-stat-value {
+        font-size: 1em;
+      }
+      
+      .mobile-navbar {
+        padding: 0 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="menu-btn" id="openSidebar">☰</button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <!-- Removed user count from navbar -->
+  </div>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-size: 1.8em;">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <a href="../homepage.html" class="nav-btn">
+        <i class="fas fa-home"></i>
+        Home
+      </a>
+      
+      <a href="../apk.html" class="nav-btn">
+        <i class="fas fa-download"></i>
+        APK Share
+      </a>
+
+      <a href="users.html" class="nav-btn active">
+        <i class="fas fa-users"></i>
+        Users
+      </a>
+
+      <a href="../Chats/chats.html" class="nav-btn">
+        <i class="fas fa-comments"></i>
+        Messages
+        <span class="notification-badge" id="chatNotificationBadge" style="display: none;">0</span>
+      </a>
+
+      <!-- Admin Only Section -->
+      <div id="adminSection" style="display: none;">
+        <a href="../Host/host.html" class="nav-btn">
+          <i class="fas fa-upload"></i>
+          Upload Project
+        </a>
+      </div>
+
+      <a href="../Settings/settings.html" class="nav-btn">
+        <i class="fas fa-cog"></i>
+        Settings
+      </a>
+
+      <button class="nav-btn" id="logOutBtn" style="margin-top: auto; background: rgba(229, 57, 53, 0.1); border-color: rgba(229, 57, 53, 0.3); color: #e53935;">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="header">
+      <h1>Motion-Flow Community</h1>
+      <p>Connect with fellow After Effects creators and collaborators</p>
+    </div>
+
+    <div class="search-filter-section">
+      <div class="search-container">
+        <label class="filter-label">Search Users</label>
+        <div class="search-box">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search by username, role, or bio...">
+        </div>
+      </div>
+      
+      <div class="filter-container">
+        <label class="filter-label">Filter by Status</label>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All Users</button>
+          <button class="filter-tab" data-filter="online">Online</button>
+          <button class="filter-tab" data-filter="offline">Offline</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="users-grid" id="usersGrid">
+      <!-- Users will be loaded here -->
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading users...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation - Matches Homepage -->
+  <footer class="bottom-nav-bar">
+    <a href="../homepage.html" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    
+    <a href="../updates/updates.html" class="nav-item">
+      <i class="fas fa-bell"></i>
+      <span>Updates</span>
+    </a>
+    
+    <a href="../Live_Chat/live.html" class="nav-item">
+      <i class="fas fa-comments"></i>
+      <span>Live Chat</span>
+    </a>
+    
+    <a href="../profile/profile.html" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </footer>
+
+  <!-- User Profile Modal -->
+  <div class="modal-overlay" id="userModal">
+    <div class="modal-content">
+      <div class="modal-close" id="closeModal">
+        <i class="fas fa-times"></i>
+      </div>
+
+      <div class="modal-header">
+        <div class="modal-profile-section">
+          <div class="modal-profile-pic" id="modalProfilePic">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="modal-profile-info">
+            <div class="modal-info-item">
+              <span class="modal-info-label">Username:</span>
+              <span class="modal-info-value" id="modalUserName">Loading...</span>
+            </div>
+            <div class="modal-info-item">
+              <span class="modal-info-label">Gender:</span>
+              <span class="modal-info-value" id="modalGender">Loading...</span>
+            </div>
+            <div class="modal-info-item">
+              <span class="modal-info-label">Role:</span>
+              <span class="modal-info-value" id="modalRole">Loading...</span>
+            </div>
+            <div class="modal-info-item">
+              <span class="modal-info-label">Status:</span>
+              <span class="modal-info-value" id="modalStatus">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-section">
+          <h2 class="modal-section-title">Statistics</h2>
+          <div class="modal-stats-grid">
+            <div class="modal-stat-card">
+              <div class="modal-stat-value" id="modalFollowers">0</div>
+              <div class="modal-stat-label">Followers</div>
+            </div>
+            <div class="modal-stat-card">
+              <div class="modal-stat-value" id="modalDownloads">0</div>
+              <div class="modal-stat-label">Downloads</div>
+            </div>
+            <div class="modal-stat-card">
+              <div class="modal-stat-value" id="modalToolsDeployed">0</div>
+              <div class="modal-stat-label">Tools Deployed</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h2 class="modal-section-title">Deployed Tools</h2>
+          <div class="modal-tools-grid" id="modalToolsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { ref, get, set, remove, getDatabase, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // Use the SAME Firebase config as homepage.html
+    const firebaseConfig = {
+      apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+      authDomain: "motion-flow-47450.firebasestorage.app",
+      databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+      projectId: "motion-flow-47450",
+      storageBucket: "motion-flow-47450.firebasestorage.app",
+      messagingSenderId: "686875529848",
+      appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+      measurementId: "G-K46N8C1HFQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase();
+
+    console.log('👥 Motion-Flow Users page initialized');
+
+    let currentUser = null;
+    let allUsers = {};
+    let displayedUsers = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let followingCache = {};
+
+    // DOM Elements
+    const usersGrid = document.getElementById("usersGrid");
+    const userModal = document.getElementById("userModal");
+    const closeModal = document.getElementById("closeModal");
+    const searchInput = document.getElementById("searchInput");
+    const filterTabs = document.querySelectorAll(".filter-tab");
+    const sidebar = document.getElementById('sidebar');
+    const openSidebar = document.getElementById('openSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const adminSection = document.getElementById('adminSection');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const logOutBtn = document.getElementById('logOutBtn');
+
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      toastMessage.textContent = message;
+      toast.className = `toast ${type}`;
+      toastIcon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Sidebar functionality
+    function toggleSidebar() {
+      const sidebarOpen = sidebar.classList.contains('active');
+      if (sidebarOpen) {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+      } else {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      }
+    }
+
+    openSidebar.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Logout functionality
+    logOutBtn.addEventListener("click", async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          await set(ref(db, "users/" + user.uid + "/status"), "offline");
+        }
+        await signOut(auth);
+        window.location.href = "../index.html";
+      } catch (error) {
+        console.error("Logout failed:", error);
+        showToast("Something went wrong while logging out.", "error");
+      }
+    });
+
+    // Close modal handlers
+    closeModal.addEventListener('click', () => {
+      userModal.classList.remove('active');
+    });
+
+    userModal.addEventListener('click', (e) => {
+      if (e.target === userModal) {
+        userModal.classList.remove('active');
+      }
+    });
+
+    // Search functionality with debounce
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchQuery = e.target.value.toLowerCase();
+        filterAndDisplayUsers();
+      }, 300);
+    });
+
+    // Filter tabs
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        filterTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.getAttribute('data-filter');
+        filterAndDisplayUsers();
+      });
+    });
+
+    // Filter and display users based on search and filter
+    function filterAndDisplayUsers() {
+      const filtered = Object.keys(allUsers).filter(userId => {
+        const user = allUsers[userId];
+        
+        // Hide current user
+        if (currentUser && userId === currentUser.uid) {
+          return false;
+        }
+
+        // Search filter
+        const matchesSearch = !searchQuery || 
+          (user.nickname || '').toLowerCase().includes(searchQuery) ||
+          (user.role || '').toLowerCase().includes(searchQuery) ||
+          (user.bio || '').toLowerCase().includes(searchQuery);
+
+        if (!matchesSearch) return false;
+
+        // Status filter
+        if (currentFilter === 'online') {
+          return user.status === 'online';
+        } else if (currentFilter === 'offline') {
+          return user.status === 'offline' || !user.status;
+        }
+
+        return true;
+      });
+
+      displayedUsers = filtered;
+      renderUsers(filtered);
+    }
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        console.log('✅ User logged in:', user.uid);
+        
+        // Load user data
+        const userRef = ref(db, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            
+            // Show admin section if user is admin
+            if (userData.role === 'admin' || userData.isAdmin) {
+              adminSection.style.display = 'block';
+            }
+          }
+        });
+        
+        // Load user's following data
+        loadFollowingData(user.uid);
+        
+      } else {
+        window.location.href = "../index.html";
+      }
+    });
+
+    // Load user's following data
+    async function loadFollowingData(userId) {
+      try {
+        const followingRef = ref(db, `following/${userId}`);
+        const snapshot = await get(followingRef);
+        followingCache = snapshot.exists() ? snapshot.val() : {};
+      } catch (error) {
+        console.error("Error loading following data:", error);
+      }
+    }
+
+    // Check if current user is following a specific user
+    function isFollowing(userId) {
+      return followingCache[userId] === true;
+    }
+
+    // Follow/Unfollow functionality
+    async function toggleFollow(userId, button) {
+      if (!currentUser) {
+        showToast('Please log in to follow users', 'error');
+        return;
+      }
+
+      if (currentUser.uid === userId) {
+        showToast('You cannot follow yourself', 'error');
+        return;
+      }
+
+      button.disabled = true;
+      const wasFollowing = isFollowing(userId);
+
+      try {
+        if (wasFollowing) {
+          // Unfollow
+          await remove(ref(db, `following/${currentUser.uid}/${userId}`));
+          await remove(ref(db, `followers/${userId}/${currentUser.uid}`));
+          
+          delete followingCache[userId];
+          button.classList.remove('following');
+          button.innerHTML = `
+            <i class="fas fa-user-plus"></i>
+            Follow
+          `;
+          showToast('Unfollowed successfully', 'success');
+        } else {
+          // Follow
+          await set(ref(db, `following/${currentUser.uid}/${userId}`), true);
+          await set(ref(db, `followers/${userId}/${currentUser.uid}`), true);
+          
+          followingCache[userId] = true;
+          button.classList.add('following');
+          button.innerHTML = `
+            <i class="fas fa-check"></i>
+            Following
+          `;
+          showToast('Following successfully', 'success');
+        }
+
+        // Update follower count in the card
+        const card = button.closest('.user-card');
+        if (card) {
+          const statsElement = card.querySelector('.user-stats');
+          await loadUserStats(userId, statsElement);
+        }
+
+      } catch (error) {
+        console.error("Error toggling follow:", error);
+        showToast('Failed to update follow status', 'error');
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    // Render users to the grid
+    function renderUsers(userIds) {
+      usersGrid.innerHTML = '';
+
+      if (userIds.length === 0) {
+        usersGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-user-slash"></i>
+            </div>
+            <h3>No users found</h3>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        `;
+        return;
+      }
+
+      userIds.forEach((userId, index) => {
+        const user = allUsers[userId];
+        const card = createUserCard(userId, user, index);
+        usersGrid.appendChild(card);
+      });
+    }
+
+    // Create user card
+    function createUserCard(userId, user, index) {
+      const card = document.createElement("div");
+      card.className = "user-card";
+      card.style.animationDelay = `${index * 0.05}s`;
+
+      // STATUS
+      const status = document.createElement("div");
+      status.className = "user-status";
+
+      if (user.status === "offline" || !user.status) {
+        status.classList.add("offline");
+        const offlineText = document.createElement("span");
+        offlineText.className = "status-text";
+        offlineText.textContent = "offline";
+        status.appendChild(offlineText);
+      } else {
+        status.classList.add("online");
+      }
+
+      card.appendChild(status);
+
+      // HEADER
+      const header = document.createElement("div");
+      header.className = "user-header";
+
+      const avatar = document.createElement("div");
+      avatar.className = "user-avatar";
+      
+      if (user.avatar) {
+        const img = document.createElement("img");
+        img.src = user.avatar;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.borderRadius = "50%";
+        img.style.objectFit = "cover";
+        img.onerror = () => {
+          avatar.innerHTML = '<i class="fas fa-user"></i>';
+        };
+        avatar.appendChild(img);
+      } else {
+        avatar.innerHTML = '<i class="fas fa-user"></i>';
+      }
+      
+      avatar.addEventListener('click', () => {
+        showUserProfile(userId, user);
+      });
+
+      const info = document.createElement("div");
+      info.className = "user-info";
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "user-name";
+      nameEl.textContent = user.nickname || 'Anonymous';
+
+      const roleEl = document.createElement("div");
+      roleEl.className = "user-role";
+      roleEl.textContent = user.role || 'User';
+
+      info.appendChild(nameEl);
+      info.appendChild(roleEl);
+      header.appendChild(avatar);
+      header.appendChild(info);
+      card.appendChild(header);
+
+      // STATS
+      const stats = document.createElement("div");
+      stats.className = "user-stats";
+
+      function makeStat(value, label) {
+        const stat = document.createElement("div");
+        stat.className = "user-stat";
+
+        const val = document.createElement("span");
+        val.className = "user-stat-value";
+        val.textContent = value;
+
+        const lbl = document.createElement("span");
+        lbl.className = "user-stat-label";
+        lbl.textContent = label;
+
+        stat.appendChild(val);
+        stat.appendChild(lbl);
+        return stat;
+      }
+
+      stats.appendChild(makeStat('...', "Tools"));
+      stats.appendChild(makeStat('...', "Downloads"));
+      stats.appendChild(makeStat('...', "Followers"));
+      card.appendChild(stats);
+
+      loadUserStats(userId, stats);
+
+      // BIO
+      const bio = document.createElement("div");
+      bio.className = "user-bio";
+      bio.textContent = user.bio || "No bio yet";
+      card.appendChild(bio);
+
+      // ACTION BUTTONS
+      const actions = document.createElement("div");
+      actions.className = "user-actions";
+
+      const followBtn = document.createElement("button");
+      followBtn.className = "follow-btn";
+      followBtn.setAttribute('data-user-id', userId);
+      
+      if (currentUser && currentUser.uid === userId) {
+        followBtn.style.display = 'none';
+      } else if (isFollowing(userId)) {
+        followBtn.classList.add('following');
+        followBtn.innerHTML = `
+          <i class="fas fa-check"></i>
+          Following
+        `;
+      } else {
+        followBtn.innerHTML = `
+          <i class="fas fa-user-plus"></i>
+          Follow
+        `;
+      }
+
+      followBtn.addEventListener('click', () => {
+        toggleFollow(userId, followBtn);
+      });
+
+      const viewProfileBtn = document.createElement("button");
+      viewProfileBtn.className = "view-profile-btn";
+      viewProfileBtn.innerHTML = `
+        <i class="fas fa-eye"></i>
+        View Profile
+      `;
+      viewProfileBtn.addEventListener('click', () => {
+        showUserProfile(userId, user);
+      });
+
+      actions.appendChild(followBtn);
+      actions.appendChild(viewProfileBtn);
+      card.appendChild(actions);
+
+      return card;
+    }
+
+    // Load user stats
+    async function loadUserStats(userId, statsElement) {
+      try {
+        const toolsRef = ref(db, `tools/${userId}`);
+        const toolsSnapshot = await get(toolsRef);
+        
+        let toolsCount = 0;
+        let totalDownloads = 0;
+        
+        if (toolsSnapshot.exists()) {
+          const tools = toolsSnapshot.val();
+          toolsCount = Object.keys(tools).length;
+          
+          Object.values(tools).forEach(tool => {
+            totalDownloads += tool.downloadCount || 0;
+          });
+        }
+        
+        const followersRef = ref(db, `followers/${userId}`);
+        const followersSnapshot = await get(followersRef);
+        const followersCount = followersSnapshot.exists() ? Object.keys(followersSnapshot.val()).length : 0;
+        
+        const statValues = statsElement.querySelectorAll('.user-stat-value');
+        statValues[0].textContent = toolsCount;
+        statValues[1].textContent = totalDownloads;
+        statValues[2].textContent = followersCount;
+        
+      } catch (error) {
+        console.error('Error loading user stats:', error);
+      }
+    }
+
+    // Load user tools in modal
+    async function loadModalUserTools(userId) {
+      const toolsRef = ref(db, `tools/${userId}`);
+      const modalToolsGrid = document.getElementById('modalToolsGrid');
+      
+      try {
+        const snapshot = await get(toolsRef);
+        
+        modalToolsGrid.innerHTML = '';
+        
+        if (snapshot.exists()) {
+          const tools = snapshot.val();
+          const toolsArray = Object.keys(tools);
+          
+          let totalDownloads = 0;
+          
+          toolsArray.forEach(toolId => {
+            const tool = tools[toolId];
+            
+            const toolCard = document.createElement('div');
+            toolCard.className = 'modal-tool-card';
+            
+            const toolIcon = tool.image 
+              ? `<img src="${tool.image}" alt="${tool.name}" style="width:100%;height:100%;object-fit:cover;">`
+              : '<i class="fas fa-box"></i>';
+            
+            toolCard.innerHTML = `
+              <div class="modal-tool-header">
+                <div class="modal-tool-icon">${toolIcon}</div>
+                <div class="modal-tool-name">${tool.name || 'Unnamed Tool'}</div>
+              </div>
+              <p class="modal-tool-desc">${tool.description || 'No description available'}</p>
+              <div class="modal-tool-downloads">📥 ${tool.downloadCount || 0} downloads</div>
+            `;
+            
+            totalDownloads += tool.downloadCount || 0;
+            modalToolsGrid.appendChild(toolCard);
+          });
+          
+          document.getElementById('modalDownloads').textContent = totalDownloads;
+          document.getElementById('modalToolsDeployed').textContent = toolsArray.length;
+          
+        } else {
+          modalToolsGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+              <div class="empty-icon">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <h3>No tools deployed yet</h3>
+              <p>This user hasn't deployed any tools</p>
+            </div>
+          `;
+          
+          document.getElementById('modalDownloads').textContent = 0;
+          document.getElementById('modalToolsDeployed').textContent = 0;
+        }
+      } catch (error) {
+        console.error("Error loading tools:", error);
+        modalToolsGrid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Error loading tools</h3>
+          </div>
+        `;
+      }
+    }
+
+    // Show user profile modal
+    async function showUserProfile(userId, userData) {
+      const modalProfilePic = document.getElementById('modalProfilePic');
+      const modalUserName = document.getElementById('modalUserName');
+      const modalGender = document.getElementById('modalGender');
+      const modalRole = document.getElementById('modalRole');
+      const modalStatus = document.getElementById('modalStatus');
+      const modalFollowers = document.getElementById('modalFollowers');
+      
+      if (userData.avatar) {
+        modalProfilePic.innerHTML = `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+      } else {
+        modalProfilePic.innerHTML = '<i class="fas fa-user"></i>';
+      }
+      
+      modalUserName.textContent = userData.nickname || 'Anonymous';
+      modalGender.textContent = userData.gender || 'Not specified';
+      modalRole.textContent = userData.role || 'User';
+      modalStatus.textContent = userData.status || 'offline';
+      
+      try {
+        const followersRef = ref(db, `followers/${userId}`);
+        const followersSnapshot = await get(followersRef);
+        const followersCount = followersSnapshot.exists() ? Object.keys(followersSnapshot.val()).length : 0;
+        modalFollowers.textContent = followersCount;
+      } catch (error) {
+        console.error('Error loading followers:', error);
+        modalFollowers.textContent = 0;
+      }
+      
+      await loadModalUserTools(userId);
+      
+      userModal.classList.add('active');
+    }
+
+    // Load users from Firebase
+    onValue(ref(db, "users"), (snapshot) => {
+      if (snapshot.exists()) {
+        allUsers = snapshot.val();
+        filterAndDisplayUsers();
+        console.log("✅ Users loaded successfully");
+      } else {
+        usersGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3>No users yet</h3>
+            <p>Be the first to join!</p>
+          </div>
+        `;
+      }
+    }, (error) => {
+      console.error('Error loading users:', error);
+      usersGrid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3>Error loading users</h3>
+          <p>Please check your connection and try again</p>
+        </div>
+      `;
+    });
+
+    // Handle escape key to close dialogs
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (userModal.classList.contains('active')) {
+          userModal.classList.remove('active');
+        }
+        if (sidebar.classList.contains('active')) {
+          toggleSidebar();
+        }
+      }
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('👥 Users page loaded');
+    });
+  </script>
+</body>
+</html>

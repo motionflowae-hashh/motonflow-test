@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Flow | Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            /* Neon Accents based on user's reference image */
+            --neon-orange: #ff9900; /* Neon Orange (for glow) */
+            --neon-cyan: #06b6d4; /* Cyan (for secondary accents) */
+            --dark-bg: #0f0f1a; /* Dark background */
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--dark-bg);
+            /* Subtle background gradient for depth */
+            background-image: radial-gradient(circle at center, rgba(6, 182, 212, 0.1) 0%, transparent 80%);
+            color: #e5e7eb; /* Light gray text for contrast */
+        }
+        
+        /* === Liquid Glass Card Style (Reduced Glow) === */
+        .liquid-glass-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); 
+            
+            /* Reduced Neon Glow (Orange Border Effect) */
+            box-shadow: 
+                0 0 5px rgba(0, 0, 0, 0.5), /* Darker, smaller drop shadow */
+                0 0 8px var(--neon-orange), /* Primary reduced orange glow */
+                0 0 15px rgba(255, 153, 0, 0.1), /* Smaller secondary orange glow */
+                inset 0 0 5px var(--neon-cyan); /* Subtle internal cyan glow */
+        }
+
+        /* === Input Styles (Orange Focus) === */
+        .glass-input {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            color: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s; 
+        }
+        
+        .glass-input:focus {
+            outline: none;
+            border-color: var(--neon-orange); /* Use orange for focus border */
+            box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.5); /* Soft orange outer glow */
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+        /* === Button Style (Orange/Cyan Gradient) === */
+        .gradient-button {
+            background: linear-gradient(90deg, var(--neon-orange) 0%, var(--neon-cyan) 100%);
+            box-shadow: 0 4px 10px rgba(255, 153, 0, 0.3);
+        }
+        
+        /* Header/Logo styling (Cyan Glow retained) */
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff;
+            text-shadow: 0 0 8px var(--neon-cyan), 0 0 15px rgba(6, 182, 212, 0.5);
+        }
+        
+        /* Message box styling update for the dark theme */
+        #message-box {
+            border: 1px solid;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <!-- Main container uses reduced mobile padding (p-6) -->
+    <div id="app-container" class="w-full max-w-md p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl liquid-glass-card">
+        <h1 class="text-4xl font-bold text-center logo-text mb-2">MOTION FLOW</h1>
+        <p class="text-center text-gray-400 mb-8">Create your account</p>
+
+        <div id="message-box" class="hidden p-4 mb-4 rounded-lg text-sm bg-opacity-30"></div>
+
+        <!-- Sign Up Form -->
+        <div id="signup-view">
+            <!-- Nickname Field -->
+            <div class="mb-4">
+                <label for="nickname" class="block text-sm font-medium text-gray-200 mb-2">Nick Name</label>
+                <input type="text" id="nickname" placeholder="Your cool nickname" class="w-full p-3 rounded-lg glass-input placeholder-gray-500" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-200 mb-2">Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" class="w-full p-3 rounded-lg glass-input placeholder-gray-500" required>
+            </div>
+            
+            <!-- Password Field with Toggle -->
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-gray-200 mb-2">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" placeholder="Min. 8 characters" class="w-full p-3 pr-12 rounded-lg glass-input placeholder-gray-500" minlength="8" required>
+                    <button type="button" id="toggle-password" class="password-toggle" onclick="togglePasswordVisibility('password')">
+                        <i class="fas fa-eye" id="eye-password"></i>
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <button type="button" onclick="generateStrongPassword()" class="text-xs text-cyan-400">
+                        <i class="fas fa-key mr-1"></i> Generate Password
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Confirm Password Field with Toggle -->
+            <div class="mb-6">
+                <label for="confirm-password" class="block text-sm font-medium text-gray-200 mb-2">Confirm Password</label>
+                <div class="password-container">
+                    <input type="password" id="confirm-password" placeholder="Confirm your password" class="w-full p-3 pr-12 rounded-lg glass-input placeholder-gray-500" minlength="8" required>
+                    <button type="button" id="toggle-confirm-password" class="password-toggle" onclick="togglePasswordVisibility('confirm-password')">
+                        <i class="fas fa-eye" id="eye-confirm-password"></i>
+                    </button>
+                </div>
+                <div class="mt-2 flex items-center">
+                    <input type="checkbox" id="show-both-passwords" class="h-4 w-4 text-cyan-600 rounded focus:ring-cyan-500" onchange="toggleBothPasswords()">
+                    <label for="show-both-passwords" class="ml-2 text-xs text-gray-300">Show both passwords</label>
+                </div>
+            </div>
+            
+            <!-- Password Strength Meter -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm text-gray-200">Password Strength</span>
+                    <span id="password-strength-text" class="text-xs text-gray-400">Weak</span>
+                </div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div id="password-strength-meter" class="h-full bg-red-500 rounded-full w-0 transition-all duration-300"></div>
+                </div>
+                <div class="mt-2 grid grid-cols-2 gap-1 text-xs text-gray-400">
+                    <div class="flex items-center">
+                        <i id="check-length" class="fas fa-times mr-1"></i>
+                        <span>At least 8 characters</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i id="check-uppercase" class="fas fa-times mr-1"></i>
+                        <span>Uppercase letter (Recommended)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="signup-button" onclick="handleSignUp()" class="gradient-button w-full text-white font-semibold py-3 rounded-lg shadow-md mb-4" disabled>
+                Sign Up Now
+            </button>
+            
+            <div class="text-center">
+                <p class="text-gray-400 text-sm">
+                    Already have an account?
+                    <a href="login.html" class="text-cyan-400 font-medium ml-1">
+                        Log In
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Verification Code Form -->
+        <div id="verification-view" class="hidden">
+            <p id="verification-prompt" class="text-center text-gray-300 mb-6">
+                A 6-digit verification code has been sent to <span id="target-email" class="font-bold text-cyan-400"></span>. Check your inbox.
+            </p>
+            <div class="mb-6">
+                <label for="verification-code" class="block text-sm font-medium text-gray-300 mb-2">Verification Code</label>
+                <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" class="w-full p-3 text-center text-2xl rounded-lg glass-input tracking-wider placeholder-gray-500" required>
+            </div>
+            <button id="verify-button" onclick="handleVerify()" class="gradient-button w-full text-white font-semibold py-3 rounded-lg shadow-md">
+                Verify & Complete Registration
+            </button>
+            <button onclick="handleResendCode()" class="w-full mt-3 text-sm text-cyan-400 py-2 rounded-lg">
+                Resend Code
+            </button>
+        </div>
+        
+        <!-- Success View -->
+        <div id="success-view" class="hidden"></div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="liquid-glass-card w-full max-w-sm p-6 rounded-xl text-center">
+            <h3 id="modal-title" class="text-xl font-bold text-white mb-3"></h3>
+            <p id="modal-message" class="text-gray-300 mb-6"></p>
+            <button onclick="closeModal()" class="gradient-button w-1/2 py-2 text-white rounded-lg">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword,
+            signInAnonymously
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'motion-flow-47450';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+            authDomain: "motion-flow-47450.firebaseapp.com",
+            projectId: "motion-flow-47450",
+            storageBucket: "motion-flow-47450.firebasestorage.app",
+            messagingSenderId: "686875529848",
+            appId: "1:686875529848:web:48edf5164aaaf938cdd38d"
+        };
+
+        const EMAILJS_PUBLIC_KEY = 'Kn6zCcEIVE789CQou';
+        const EMAILJS_SERVICE_ID = 'service_desu1hi';
+        const EMAILJS_TEMPLATE_ID = 'template_51sjsln';
+
+        let auth, db;
+        let generatedCode = null;
+        let userData = { email: '', password: '', nickname: '' };
+
+        // --- UI Logic Functions ---
+        const showCustomModal = (title, message) => {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').innerHTML = message;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.closeModal = () => document.getElementById('custom-modal').classList.add('hidden');
+
+        const showMessage = (text, type = 'error') => {
+            const box = document.getElementById('message-box');
+            box.innerHTML = text;
+            box.className = 'p-4 mb-4 rounded-lg text-sm bg-opacity-30';
+            if (type === 'error') box.classList.add('bg-red-800', 'text-red-300', 'border-red-600');
+            else if (type === 'success') box.classList.add('bg-green-800', 'text-green-300', 'border-green-600');
+            else if (type === 'info') box.classList.add('bg-blue-800', 'text-blue-300', 'border-blue-600');
+            box.classList.remove('hidden');
+        };
+
+        const hideMessage = () => document.getElementById('message-box').classList.add('hidden');
+        const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+        const setView = (viewId) => {
+            ['signup-view', 'verification-view', 'success-view'].forEach(v => {
+                const el = document.getElementById(v);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+            hideMessage();
+        };
+
+        const setLoading = (buttonId, isLoading) => {
+            const btn = document.getElementById(buttonId);
+            if (!btn) return;
+            if (isLoading) {
+                btn.dataset.original = btn.textContent;
+                btn.textContent = 'Processing...';
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            } else {
+                btn.textContent = btn.dataset.original || 'Submit';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        };
+
+        // --- Core Application Logic ---
+        const initializeApplication = async () => {
+            try {
+                emailjs.init(EMAILJS_PUBLIC_KEY);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInAnonymously(auth).catch(() => console.log("Proceeding without initial auth"));
+                document.getElementById('signup-button').disabled = false;
+            } catch (err) {
+                console.error("Initialization Failed:", err);
+                showMessage("Initialization error. Check console.", 'error');
+            }
+        };
+
+        window.handleSignUp = async () => {
+            const nickname = document.getElementById('nickname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm-password').value;
+
+            if (!nickname || !email || !password) return showCustomModal('Error', 'Please fill in all fields.');
+            if (password.length < 8) return showCustomModal('Error', 'Password must be at least 8 characters.');
+            if (password !== confirm) return showCustomModal('Error', 'Passwords do not match.');
+
+            setLoading('signup-button', true);
+
+            try {
+                generatedCode = generateOTP();
+                userData = { email, password, nickname };
+
+                const emailParams = {
+                    user_name: userData.nickname,
+                    user_email: userData.email,
+                    user_password: userData.password,
+                    otp_code: generatedCode
+                };
+
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+                document.getElementById('target-email').textContent = email;
+                setView('verification-view');
+                showMessage('Verification code sent!', 'success');
+            } catch (error) {
+                console.error("Email Error:", error);
+                showMessage("Failed to send email. Check configuration.", "error");
+            } finally {
+                setLoading('signup-button', false);
+            }
+        };
+
+        window.handleVerify = async () => {
+            const code = document.getElementById('verification-code').value.trim();
+            if (code !== generatedCode) return showCustomModal('Invalid Code', 'The OTP is incorrect.');
+
+            setLoading('verify-button', true);
+
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+                const user = userCred.user;
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', user.uid);
+                await setDoc(userDocRef, {
+                    uid: user.uid,
+                    nickname: userData.nickname,
+                    email: userData.email,
+                    createdAt: new Date().toISOString()
+                });
+
+                document.getElementById('success-view').innerHTML = `
+                    <div class="text-center p-8 liquid-glass-card rounded-lg border-2 border-cyan-500">
+                        <i class="fas fa-check-circle text-5xl text-cyan-400 mb-4"></i>
+                        <h2 class="text-2xl font-bold text-white mb-2">Success!</h2>
+                        <p class="text-gray-400 mb-6">Welcome, ${userData.nickname}. Your account is ready.</p>
+                        <a href="profile-setup.html" class="gradient-button block text-white font-semibold py-3 rounded-lg shadow-md">
+                            Go to Profile Setup
+                        </a>
+                    </div>
+                `;
+                setView('success-view');
+            } catch (error) {
+                console.error("Registration Error:", error);
+                showCustomModal('Error', error.message);
+            } finally {
+                setLoading('verify-button', false);
+            }
+        };
+
+        window.handleResendCode = async () => {
+            showMessage("Resending code...", "info");
+            await window.handleSignUp();
+        };
+
+        // --- Password Helper Functions ---
+        window.togglePasswordVisibility = (id) => {
+            const input = document.getElementById(id);
+            const icon = document.getElementById(`eye-${id}`);
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        };
+
+        window.toggleBothPasswords = () => {
+            const showBoth = document.getElementById('show-both-passwords').checked;
+            const passInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirm-password');
+            const passIcon = document.getElementById('eye-password');
+            const confirmIcon = document.getElementById('eye-confirm-password');
+
+            const type = showBoth ? 'text' : 'password';
+            passInput.type = type;
+            confirmInput.type = type;
+
+            // Sync icons
+            if (showBoth) {
+                passIcon.className = 'fas fa-eye-slash';
+                confirmIcon.className = 'fas fa-eye-slash';
+            } else {
+                passIcon.className = 'fas fa-eye';
+                confirmIcon.className = 'fas fa-eye';
+            }
+        };
+
+        window.generateStrongPassword = () => {
+            const pass = Math.random().toString(36).slice(-10).toUpperCase() + "!" + Math.floor(Math.random()*100);
+            document.getElementById('password').value = pass;
+            document.getElementById('confirm-password').value = pass;
+            checkPasswordStrength(pass);
+        };
+
+        const checkPasswordStrength = (p) => {
+            const meter = document.getElementById('password-strength-meter');
+            const txt = document.getElementById('password-strength-text');
+            const hasUpper = /[A-Z]/.test(p);
+            const isLong = p.length >= 8;
+            
+            document.getElementById('check-length').className = isLong ? 'fas fa-check text-green-500 mr-1' : 'fas fa-times text-red-500 mr-1';
+            document.getElementById('check-uppercase').className = hasUpper ? 'fas fa-check text-green-500 mr-1' : 'fas fa-times text-red-500 mr-1';
+
+            if (p.length > 10 && hasUpper) { meter.style.width = '100%'; meter.className = 'h-full bg-green-500 rounded-full'; txt.textContent = 'Strong'; }
+            else if (isLong) { meter.style.width = '60%'; meter.className = 'h-full bg-yellow-500 rounded-full'; txt.textContent = 'Medium'; }
+            else { meter.style.width = '20%'; meter.className = 'h-full bg-red-500 rounded-full'; txt.textContent = 'Weak'; }
+        };
+
+        document.getElementById('password').addEventListener('input', (e) => checkPasswordStrength(e.target.value));
+        
+        initializeApplication();
+    </script>
+</body>
+</html>

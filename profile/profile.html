@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Motion-Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-dark: #0a0a12;
+      --color-bg: #0f0f1a;
+      --color-bg-light: #1a1a2e;
+      --color-primary: #00bcd4;
+      --color-accent: #00bcd4;
+      --color-accent-alt: #f97316;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-body);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.8em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+      z-index: 1003;
+    }
+
+    .menu-btn:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { 
+      color: var(--color-accent);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      box-shadow: 2px 0 20px rgba(0, 188, 212, 0.2);
+      backdrop-filter: blur(10px);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      padding: 80px 25px 30px;
+      background: rgba(15, 17, 30, 0.95);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+      text-align: center;
+    }
+
+    .sidebar-nav {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      padding: 15px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: rgba(0, 188, 212, 0.3);
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(249, 115, 22, 0.1));
+      border-color: rgba(0, 188, 212, 0.4);
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-accent);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 20px 120px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .profile-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .profile-header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 0 10px;
+    }
+
+    .profile-header-section h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2em, 5vw, 3em);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+      line-height: 1.2;
+    }
+
+    .profile-header-section p {
+      color: var(--color-text-muted);
+      font-size: clamp(1em, 3vw, 1.2em);
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    .profile-main {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .profile-main {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    /* Profile Card Styles */
+    .profile-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+      border-color: rgba(0, 188, 212, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .profile-avatar-section {
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 3px solid var(--color-accent);
+      background: linear-gradient(135deg, #0a0a2a, #1a1a3a);
+      margin: 0 auto 25px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 188, 212, 0.3);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 50%;
+    }
+
+    .profile-avatar:hover .avatar-overlay {
+      opacity: 1;
+    }
+
+    .avatar-overlay i {
+      color: white;
+      font-size: 2em;
+    }
+
+    /* Name Elements */
+    .nickname {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4em, 4vw, 1.8em);
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .username {
+      color: var(--color-text-muted);
+      font-size: clamp(1em, 3vw, 1.1em);
+      margin-bottom: 20px;
+    }
+
+    .profile-bio {
+      color: var(--color-text-muted);
+      font-size: clamp(0.9em, 2.5vw, 1em);
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    /* Stats Section - MODIFIED: Removed posts, only followers and following */
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .profile-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: rgba(0, 188, 212, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .stat-item:hover {
+      background: rgba(0, 188, 212, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-size: clamp(1.2em, 4vw, 1.6em);
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: clamp(0.8em, 2.5vw, 0.9em);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Social Links - FIXED INSTAGRAM DESIGN */
+    .social-links {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .social-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .social-link.tiktok {
+      background: #000000;
+    }
+    .social-link.youtube {
+      background: #FF0000;
+    }
+    .social-link.instagram {
+      background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+    }
+
+    /* Info Card */
+    .info-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      width: 100%;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.2em, 4vw, 1.5em);
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: rgba(0, 188, 212, 0.05);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-left-color: var(--color-accent-alt);
+      transform: translateX(5px);
+    }
+
+    .info-label {
+      color: var(--color-accent);
+      font-weight: 600;
+      min-width: 120px;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      letter-spacing: 1px;
+    }
+
+    .info-value {
+      color: var(--color-text);
+      font-weight: 500;
+      font-size: 1em;
+      flex: 1;
+    }
+
+    /* Edit Profile Button */
+    .edit-profile-btn {
+      display: inline-block;
+      background: transparent;
+      color: var(--color-accent);
+      border: 2px solid var(--color-accent);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-top: 15px;
+    }
+
+    .edit-profile-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 188, 212, 0.2);
+    }
+
+    /* Interests Tags */
+    .interests-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .interest-tag {
+      background: rgba(0, 188, 212, 0.1);
+      color: var(--color-accent);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    /* Bottom Navigation - UPDATED: LIQUID GLASS EFFECT */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      z-index: 990;
+      
+      /* CORE LIQUID GLASS EFFECT */
+      background: rgba(10, 10, 18, 0.7); /* Transparent dark background */
+      backdrop-filter: blur(25px) saturate(150%);
+      -webkit-backdrop-filter: blur(25px) saturate(150%); /* For browser compatibility */
+      
+      /* NEON ACCENTS */
+      border-top: 1px solid rgba(0, 188, 212, 0.3); /* Subtle cyan border top */
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5), 0 -2px 10px rgba(0, 188, 212, 0.1);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-text-muted);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 8px;
+      /* Springy transition for the tap/hover effect */
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+      transition: color 0.3s;
+    }
+
+    .nav-item.active {
+      color: var(--color-primary);
+      transform: scale(1.05);
+    }
+
+    .nav-item.active i {
+      color: var(--color-primary);
+      text-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+    }
+
+    .nav-item:hover {
+      color: var(--color-primary);
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Logout Dialog */
+    .logout-dialog {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 26, 0.95);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .logout-dialog.active {
+      display: flex;
+    }
+
+    .logout-content {
+      background: rgba(15, 17, 30, 0.95);
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      box-shadow: 0 0 40px rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .logout-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .logout-confirm-btn, .logout-cancel-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 100px;
+    }
+
+    .logout-confirm-btn {
+      background: linear-gradient(135deg, #ff4757, #ff3742);
+      color: #ffffff;
+    }
+
+    .logout-confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+    }
+
+    .logout-cancel-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .logout-cancel-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: var(--color-accent);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 70px 15px 100px;
+      }
+      
+      .profile-card, .info-card {
+        padding: 20px;
+      }
+      
+      .profile-avatar {
+        width: 140px;
+        height: 140px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 70px 10px 90px;
+      }
+      
+      .profile-main {
+        gap: 15px;
+      }
+      
+      .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .info-label {
+        min-width: auto;
+      }
+    }
+
+    /* Cooldown Badge */
+    .cooldown-badge {
+      display: inline-block;
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--color-accent-alt);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      margin-left: 8px;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    /* Privacy Badges */
+    .privacy-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .privacy-badge.public {
+      background: rgba(0, 188, 212, 0.2);
+      color: var(--color-accent);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+    }
+
+    .privacy-badge.private {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--color-accent-alt);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    .privacy-badge.friends {
+      background: rgba(124, 58, 237, 0.2);
+      color: #8b5cf6;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    /* Edit Button */
+    .edit-icon {
+      margin-left: 10px;
+      color: var(--color-accent);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .edit-icon:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.2);
+    }
+
+    /* Follow/Unfollow Button */
+    .follow-btn {
+      display: inline-block;
+      background: var(--color-accent);
+      color: var(--color-dark);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .follow-btn:hover {
+      background: rgba(0, 188, 212, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+    }
+
+    .follow-btn.unfollow {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .follow-btn.unfollow:hover {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+      border-color: rgba(244, 67, 54, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="menu-btn" id="openSidebar">☰</button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="user-info" id="navbarUserInfo"></div>
+  </div>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-size: 1.8em;">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+      <div class="sidebar-user-info" id="sidebarUserInfo" style="margin-top: 15px; color: var(--color-text-muted);"></div>
+    </div>
+    <div class="sidebar-nav">
+      <a href="../homepage.html" class="nav-btn">
+        <i class="fas fa-home"></i>
+        Home
+      </a>
+
+      <a href="../Users/users.html" class="nav-btn">
+        <i class="fas fa-users"></i>
+        Users
+      </a>
+
+      <a href="../Chats/chats.html" class="nav-btn">
+        <i class="fas fa-comments"></i>
+        Messages
+      </a>
+
+      <a href="../Settings/settings.html" class="nav-btn">
+        <i class="fas fa-cog"></i>
+        Settings
+      </a>
+
+      <button class="nav-btn" id="logOutBtn" style="margin-top: auto; background: rgba(229, 57, 53, 0.1); border-color: rgba(229, 57, 53, 0.3); color: #e53935;">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <div class="profile-container">
+      <div class="profile-header-section">
+        <h1>My Profile</h1>
+        <p>View and manage your profile information</p>
+      </div>
+
+      <div class="profile-main">
+        <!-- Left Column - Profile Card -->
+        <div class="profile-card">
+          <div class="profile-avatar-section">
+            <div class="profile-avatar" id="profile-avatar" onclick="window.location.href='edit-profile.html'">
+              <!-- Avatar will be loaded here -->
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--color-accent);">
+                <i class="fas fa-user" style="font-size: 4em;"></i>
+              </div>
+              <div class="avatar-overlay">
+                <i class="fas fa-camera"></i>
+              </div>
+            </div>
+            <!-- Only 2 name elements -->
+            <div class="nickname" id="nickname">Nickname</div>
+            <div class="username" id="username">@username</div>
+            <div class="profile-bio" id="profile-bio">No bio yet.</div>
+            
+            <!-- Social Links - FIXED INSTAGRAM GRADIENT -->
+            <div class="social-links" id="social-links">
+              <!-- Social links will be loaded here -->
+            </div>
+            
+            <!-- Followers/Following Stats - REMOVED POSTS COUNT -->
+            <div class="profile-stats">
+              <div class="stat-item" id="followers-stat">
+                <div class="stat-value" id="followers-count">0</div>
+                <div class="stat-label">Followers</div>
+              </div>
+              <div class="stat-item" id="following-stat">
+                <div class="stat-value" id="following-count">0</div>
+                <div class="stat-label">Following</div>
+              </div>
+            </div>
+            
+            <a href="edit-profile.html" class="edit-profile-btn">
+              <i class="fas fa-edit"></i> Edit Profile
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column - Profile Details -->
+        <div class="profile-info-section">
+          <!-- Public Information Card (Visible to all) -->
+          <div class="info-card">
+            <div class="card-title">
+              <i class="fas fa-globe"></i>
+              Public Information
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Username:</span>
+                <span class="info-value" id="public-username">@username</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Interests:</span>
+                <div class="interests-container" id="public-interests">
+                  <!-- Public interests will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Private Information Card (Visible only to user) -->
+          <div class="info-card" id="privateInfoCard">
+            <div class="card-title">
+              <i class="fas fa-lock"></i>
+              Private Information
+              <span class="cooldown-badge" id="nicknameCooldown" style="display: none;"></span>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value" id="private-email">Loading...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Full Name:</span>
+                <span class="info-value" id="private-fullname">Loading...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Location:</span>
+                <span class="info-value" id="private-location">Not specified</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Display Name:</span>
+                <span class="info-value" id="private-nickname">Nickname</span>
+                <span class="cooldown-badge" id="nicknameCooldown2" style="display: none;"></span>
+                <i class="fas fa-edit edit-icon" onclick="window.location.href='edit-profile.html'"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Settings Card (Visible only to user) -->
+          <div class="info-card" id="privacySettingsCard">
+            <div class="card-title">
+              <i class="fas fa-shield-alt"></i>
+              Privacy Settings
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Profile Visibility:</span>
+                <span class="info-value">
+                  <span id="privacy-visibility">Public</span>
+                  <span class="privacy-badge public" id="privacyBadge">Public</span>
+                </span>
+                <i class="fas fa-edit edit-icon" onclick="window.location.href='edit-profile.html'"></i>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Email Visible:</span>
+                <span class="info-value" id="privacy-email-visible">No</span>
+                <i class="fas fa-edit edit-icon" onclick="window.location.href='edit-profile.html'"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation - UPDATED LIQUID GLASS EFFECT -->
+  <footer class="bottom-nav-bar">
+    <a href="../homepage.html" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    
+    <a href="../updates/updates.html" class="nav-item">
+      <i class="fas fa-bell"></i>
+      <span>Updates</span>
+    </a>
+    
+    <a href="../Live_Chat/live.html" class="nav-item">
+      <i class="fas fa-comments"></i>
+      <span>Live Chat</span>
+    </a>
+    
+    <a href="../profile/profile.html" class="nav-item active">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </footer>
+
+  <!-- Logout Confirmation Dialog -->
+  <div class="logout-dialog" id="logoutDialog">
+    <div class="logout-content">
+      <h2>Logout Confirmation</h2>
+      <p>Are you sure you want to logout of your account?</p>
+      <div class="logout-buttons">
+        <button class="logout-confirm-btn" id="logoutConfirm">Yes, Logout</button>
+        <button class="logout-cancel-btn" id="logoutCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      getDoc, 
+      doc,
+      collection,
+      query,
+      where,
+      getDocs,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { 
+      onAuthStateChanged, 
+      getAuth, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+      authDomain: "motion-flow-47450.firebasestorage.app",
+      databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+      projectId: "motion-flow-47450",
+      storageBucket: "motion-flow-47450.firebasestorage.app",
+      messagingSenderId: "686875529848",
+      appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+      measurementId: "G-K46N8C1HFQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const profileAvatar = document.getElementById("profile-avatar");
+    const nicknameElement = document.getElementById("nickname");
+    const usernameElement = document.getElementById("username");
+    const profileBio = document.getElementById("profile-bio");
+    
+    // Stats elements - REMOVED POSTS COUNT
+    const followersCount = document.getElementById("followers-count");
+    const followingCount = document.getElementById("following-count");
+    
+    // Public elements
+    const publicUsername = document.getElementById("public-username");
+    const publicInterests = document.getElementById("public-interests");
+    
+    // Private elements
+    const privateEmail = document.getElementById("private-email");
+    const privateFullname = document.getElementById("private-fullname");
+    const privateLocation = document.getElementById("private-location");
+    const privateNickname = document.getElementById("private-nickname");
+    
+    // Privacy elements
+    const privacyVisibility = document.getElementById("privacy-visibility");
+    const privacyEmailVisible = document.getElementById("privacy-email-visible");
+    const privacyBadge = document.getElementById("privacyBadge");
+    
+    // Cooldown badges
+    const nicknameCooldown = document.getElementById("nicknameCooldown");
+    const nicknameCooldown2 = document.getElementById("nicknameCooldown2");
+    
+    const socialLinksContainer = document.getElementById("social-links");
+    const navbarUserInfo = document.getElementById("navbarUserInfo");
+    const sidebarUserInfo = document.getElementById("sidebarUserInfo");
+    
+    // Cards
+    const privateInfoCard = document.getElementById("privateInfoCard");
+    const privacySettingsCard = document.getElementById("privacySettingsCard");
+
+    // Sidebar elements
+    const sidebar = document.getElementById('sidebar');
+    const openSidebar = document.getElementById('openSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const logOutBtn = document.getElementById("logOutBtn");
+    const logoutDialog = document.getElementById('logoutDialog');
+    const logoutConfirm = document.getElementById('logoutConfirm');
+    const logoutCancel = document.getElementById('logoutCancel');
+
+    let sidebarOpen = false;
+    let currentUserId = null;
+    let currentUserData = null;
+
+    // Sidebar functionality
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      if (sidebarOpen) {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      } else {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+      }
+    }
+
+    openSidebar.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Logout functionality
+    logOutBtn.addEventListener("click", () => {
+      logoutDialog.classList.add('active');
+    });
+
+    logoutConfirm.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = '../index.html';
+      } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Something went wrong while logging out.");
+      }
+    });
+
+    logoutCancel.addEventListener("click", () => {
+      logoutDialog.classList.remove('active');
+    });
+
+    logoutDialog.addEventListener('click', (e) => {
+      if (e.target === logoutDialog) {
+        logoutDialog.classList.remove('active');
+      }
+    });
+
+    // Calculate remaining days for cooldown
+    function getRemainingDays(lastChangeDate, cooldownDays) {
+      if (!lastChangeDate) return 0;
+      
+      const lastChange = new Date(lastChangeDate);
+      const now = new Date();
+      const diffTime = Math.abs(now - lastChange);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const remaining = cooldownDays - diffDays;
+      
+      return remaining > 0 ? remaining : 0;
+    }
+
+    // Format cooldown message
+    function formatCooldownMessage(remainingDays, type) {
+      if (remainingDays === 0) return '';
+      
+      if (remainingDays === 1) {
+        return `Can change ${type} in ${remainingDays} day`;
+      } else {
+        return `Can change ${type} in ${remainingDays} days`;
+      }
+    }
+
+    // Load followers and following counts - REMOVED POSTS COUNT
+    async function loadFollowStats(userId) {
+      try {
+        // Load followers count
+        const followersQuery = query(
+          collection(db, "followers"),
+          where("followingId", "==", userId)
+        );
+        const followersSnapshot = await getDocs(followersQuery);
+        followersCount.textContent = followersSnapshot.size.toString();
+
+        // Load following count
+        const followingQuery = query(
+          collection(db, "followers"),
+          where("followerId", "==", userId)
+        );
+        const followingSnapshot = await getDocs(followingQuery);
+        followingCount.textContent = followingSnapshot.size.toString();
+
+      } catch (error) {
+        console.error("Error loading follow stats:", error);
+      }
+    }
+
+    // Update UI with user data
+    function updateUserUI(userData) {
+      // Set nickname (without @) as display name
+      if (userData.nickname) {
+        nicknameElement.textContent = userData.nickname;
+        privateNickname.textContent = userData.nickname;
+      } else if (userData.username) {
+        nicknameElement.textContent = userData.username;
+        privateNickname.textContent = userData.username;
+      }
+      
+      // Set username with @ symbol
+      if (userData.username) {
+        usernameElement.textContent = `@${userData.username}`;
+        publicUsername.textContent = `@${userData.username}`;
+        navbarUserInfo.innerHTML = userData.username;
+        sidebarUserInfo.innerHTML = userData.username;
+      }
+      
+      // Set full name (private)
+      if (userData.fullName) {
+        privateFullname.textContent = userData.fullName;
+      }
+      
+      // Set email (private)
+      if (userData.email) {
+        privateEmail.textContent = userData.email;
+      }
+      
+      // Set location (private)
+      if (userData.location) {
+        privateLocation.textContent = userData.location;
+      }
+      
+      // Set bio
+      if (userData.bio) {
+        profileBio.textContent = userData.bio;
+      }
+      
+      // Set profile picture
+      if (userData.profileImage) {
+        profileAvatar.innerHTML = `
+          <img src="${userData.profileImage}" alt="Profile Picture">
+          <div class="avatar-overlay">
+            <i class="fas fa-camera"></i>
+          </div>
+        `;
+      }
+      
+      // Set interests (public)
+      if (userData.interests && Array.isArray(userData.interests) && userData.interests.length > 0) {
+        publicInterests.innerHTML = '';
+        userData.interests.forEach(interest => {
+          const tag = document.createElement('div');
+          tag.className = 'interest-tag';
+          tag.textContent = interest;
+          publicInterests.appendChild(tag);
+        });
+      } else {
+        publicInterests.innerHTML = '<div style="color: var(--color-text-muted);">No interests selected</div>';
+      }
+      
+      // Set social links - FIXED INSTAGRAM DESIGN
+      if (userData.social) {
+        socialLinksContainer.innerHTML = '';
+        
+        if (userData.social.tiktok) {
+          const tiktokLink = document.createElement('a');
+          tiktokLink.href = `https://tiktok.com/@${userData.social.tiktok}`;
+          tiktokLink.target = '_blank';
+          tiktokLink.className = 'social-link tiktok';
+          tiktokLink.innerHTML = '<i class="fab fa-tiktok"></i>';
+          socialLinksContainer.appendChild(tiktokLink);
+        }
+        
+        if (userData.social.youtube) {
+          const youtubeLink = document.createElement('a');
+          youtubeLink.href = userData.social.youtube.includes('http') ? userData.social.youtube : `https://youtube.com/${userData.social.youtube}`;
+          youtubeLink.target = '_blank';
+          youtubeLink.className = 'social-link youtube';
+          youtubeLink.innerHTML = '<i class="fab fa-youtube"></i>';
+          socialLinksContainer.appendChild(youtubeLink);
+        }
+        
+        if (userData.social.instagram) {
+          const instagramLink = document.createElement('a');
+          instagramLink.href = `https://instagram.com/${userData.social.instagram}`;
+          instagramLink.target = '_blank';
+          instagramLink.className = 'social-link instagram';
+          instagramLink.innerHTML = '<i class="fab fa-instagram"></i>';
+          socialLinksContainer.appendChild(instagramLink);
+        }
+        
+        if (socialLinksContainer.children.length === 0) {
+          socialLinksContainer.innerHTML = '<div style="color: var(--color-text-muted);">No social links added</div>';
+        }
+      }
+      
+      // Set privacy settings (private)
+      if (userData.privacy) {
+        const visibility = userData.privacy.profileVisibility || 'public';
+        privacyVisibility.textContent = visibility.charAt(0).toUpperCase() + visibility.slice(1);
+        privacyEmailVisible.textContent = userData.privacy.showEmail ? 'Yes' : 'No';
+        
+        // Update privacy badge
+        privacyBadge.textContent = visibility.charAt(0).toUpperCase() + visibility.slice(1);
+        privacyBadge.className = `privacy-badge ${visibility}`;
+      }
+      
+      // Check cooldowns for nickname changes
+      if (userData.lastChanged) {
+        const nicknameRemaining = getRemainingDays(userData.lastChanged.nickname, 10);
+        
+        if (nicknameRemaining > 0) {
+          const message = formatCooldownMessage(nicknameRemaining, 'nickname');
+          nicknameCooldown.textContent = message;
+          nicknameCooldown.style.display = 'inline-block';
+          nicknameCooldown2.textContent = message;
+          nicknameCooldown2.style.display = 'inline-block';
+        }
+      }
+      
+      currentUserData = userData;
+    }
+
+    // Load user profile data from Firestore
+    async function loadUserProfile(userId) {
+      try {
+        console.log('Loading profile for user:', userId);
+        const userDoc = await getDoc(doc(db, "users", userId));
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User data loaded:', userData);
+          
+          if (!userData.profileCompleted) {
+            console.log('⚠️ Profile not completed - redirecting to setup');
+            window.location.href = 'profile-setup.html';
+            return;
+          }
+          
+          updateUserUI(userData);
+          await loadFollowStats(userId);
+          
+        } else {
+          console.log('⚠️ User data not found - redirecting to profile setup');
+          window.location.href = 'profile-setup.html';
+        }
+      } catch (error) {
+        console.error("❌ Error loading user data:", error);
+        nicknameElement.textContent = "Error Loading Profile";
+        usernameElement.textContent = "@error";
+      }
+    }
+
+    // Auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        console.log('👤 User authenticated:', currentUserId);
+        await loadUserProfile(currentUserId);
+      } else {
+        console.log("⚠️ No user logged in");
+        window.location.href = "../index.html";
+      }
+    });
+
+    // Handle escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (sidebarOpen) {
+          toggleSidebar();
+        }
+        if (logoutDialog.classList.contains('active')) {
+          logoutDialog.classList.remove('active');
+        }
+      }
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Profile page loaded');
+    });
+  </script>
+</body>
+</html>

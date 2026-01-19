@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Motion-Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-dark: #0a0a12;
+            --color-bg: #0f0f1a;
+            --color-bg-light: #1a1a2e;
+            --color-accent: #06b6d4;
+            --color-text: #e2e8f0;
+            --color-text-muted: #94a3b8;
+            --color-text-dark: #475569;
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--space-xl) var(--space-md);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-accent);
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-lg);
+            transition: opacity 0.3s ease;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: var(--space-md);
+            background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .last-updated {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content-section {
+            margin-bottom: var(--space-xl);
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin: var(--space-lg) 0 var(--space-md);
+            color: var(--color-accent);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            margin: var(--space-md) 0 var(--space-sm);
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-muted);
+        }
+
+        ul, ol {
+            margin-left: var(--space-md);
+            margin-bottom: var(--space-md);
+            color: var(--color-text-muted);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            background: rgba(6, 182, 212, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--color-accent);
+        }
+
+        .footer {
+            background-color: var(--color-dark);
+            padding: var(--space-md) 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: var(--space-xl);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--color-accent);
+        }
+
+        .copyright {
+            text-align: center;
+            color: var(--color-text-dark);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-lg) var(--space-sm);
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <h1>Privacy Policy</h1>
+        
+        <p class="last-updated">Last Updated: December 8, 2024</p>
+        
+        <div class="content-section">
+            <h2>Introduction</h2>
+            <p>Welcome to Motion-Flow. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.</p>
+            
+            <h2>Information We Collect</h2>
+            <h3>Personal Information</h3>
+            <p>We collect personal information that you voluntarily provide to us when you register on the website, express an interest in obtaining information about us or our products and services, or otherwise contact us. The personal information we collect may include:</p>
+            <ul>
+                <li>Name and contact information (email address, etc.)</li>
+                <li>Account credentials (username, password)</li>
+                <li>Payment information (processed by secure third-party processors)</li>
+                <li>Profile information (bio, preferences, etc.)</li>
+            </ul>
+            
+            <h3>Automatically Collected Information</h3>
+            <p>We automatically collect certain information when you visit, use, or navigate the website. This information does not reveal your specific identity but may include:</p>
+            <ul>
+                <li>Device and usage information (IP address, browser type, operating system)</li>
+                <li>Cookies and similar technologies data</li>
+                <li>Log and analytics data</li>
+            </ul>
+            
+            <h2>How We Use Your Information</h2>
+            <p>We use personal information collected via our website for a variety of business purposes described below:</p>
+            <ul>
+                <li>To facilitate account creation and login process</li>
+                <li>To provide and maintain our services</li>
+                <li>To send administrative information to you</li>
+                <li>To respond to user inquiries and offer support</li>
+                <li>To send you marketing and promotional communications</li>
+                <li>To protect our services and prevent fraud</li>
+            </ul>
+            
+            <h2>Data Security</h2>
+            <p>We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. However, please also remember that we cannot guarantee that the internet itself is 100% secure.</p>
+            
+            <h2>Your Privacy Rights</h2>
+            <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+            <ul>
+                <li>The right to access and receive a copy of your personal information</li>
+                <li>The right to rectify any inaccurate personal information</li>
+                <li>The right to request deletion of your personal information</li>
+                <li>The right to restrict or object to processing of your personal information</li>
+            </ul>
+            
+            <h2>Third-Party Services</h2>
+            <p>We may employ third-party companies and individuals to facilitate our service, provide the service on our behalf, perform service-related services, or assist us in analyzing how our service is used.</p>
+            
+            <h2>Children's Privacy</h2>
+            <p>Our service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13.</p>
+            
+            <h2>Changes to This Privacy Policy</h2>
+            <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+            
+            <h2>Contact Us</h2>
+            <p>If you have questions or comments about this Privacy Policy, you may contact us at:</p>
+            <p><span class="highlight">privacy@motion-flow.com</span></p>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="privacy.html" class="footer-link">Privacy Policy</a>
+                <a href="terms.html" class="footer-link">Terms of Service</a>
+            </div>
+            <p class="copyright">© 2024 Motion-Flow. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

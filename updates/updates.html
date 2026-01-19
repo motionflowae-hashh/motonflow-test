@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Updates - Motion-Flow</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-dark: #0a0a12;
+      --color-bg: #0f0f1a;
+      --color-bg-light: #1a1a2e;
+      --color-primary: #00bcd4;
+      --color-accent: #00bcd4;
+      --color-accent-alt: #f97316;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-error: #ef4444;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-body);
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.8em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+      z-index: 1003;
+    }
+
+    .menu-btn:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { 
+      color: var(--color-accent);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      box-shadow: 2px 0 20px rgba(0, 188, 212, 0.2);
+      backdrop-filter: blur(10px);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      padding: 80px 25px 30px;
+      background: rgba(15, 17, 30, 0.95);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+      text-align: center;
+    }
+
+    .sidebar-nav {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      padding: 15px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: rgba(0, 188, 212, 0.3);
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(249, 115, 22, 0.1));
+      border-color: rgba(0, 188, 212, 0.4);
+    }
+
+    .nav-btn i {
+      color: var(--color-accent);
+      font-size: 1.2em;
+      width: 24px;
+      text-align: center;
+    }
+
+    .notification-badge {
+      background: linear-gradient(135deg, #ff4757, #ff3742);
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 20px 120px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Updates Header */
+    .updates-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 0 10px;
+    }
+
+    .updates-header h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8em, 5vw, 2.8em);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+      line-height: 1.2;
+    }
+
+    .updates-header p {
+      color: var(--color-text-muted);
+      font-size: clamp(0.9em, 3vw, 1.1em);
+      opacity: 0.8;
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Admin Controls */
+    .admin-controls {
+      margin-bottom: 40px;
+    }
+
+    .admin-panel {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .admin-panel:hover {
+      border-color: rgba(0, 188, 212, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .admin-panel h2 {
+      color: var(--color-accent);
+      margin-bottom: 20px;
+      font-size: 1.3em;
+      font-family: var(--font-heading);
+    }
+
+    .create-update-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-group label {
+      color: var(--color-text);
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: var(--font-body);
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2300bcd4' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .media-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .image-preview {
+      width: 200px;
+      height: 200px;
+      border: 2px dashed rgba(0, 188, 212, 0.3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .image-preview img,
+    .image-preview video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .remove-media-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(239, 68, 68, 0.8);
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .remove-media-btn:hover {
+      background: rgba(239, 68, 68, 1);
+      transform: scale(1.1);
+    }
+
+    .publish-btn {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 1em;
+    }
+
+    .publish-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    /* Updates Container */
+    .updates-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      .updates-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Update Card */
+    .update-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .update-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 188, 212, 0.3);
+      box-shadow: 0 15px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .update-card.announcement {
+      border-left: 4px solid var(--color-accent);
+    }
+
+    .update-card.product {
+      border-left: 4px solid var(--color-warning);
+    }
+
+    .update-card.video {
+      border-left: 4px solid var(--color-success);
+    }
+
+    .update-media-wrapper {
+      height: 250px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .update-media-wrapper img,
+    .update-media-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .update-card:hover .update-media-wrapper img,
+    .update-card:hover .update-media-wrapper video {
+      transform: scale(1.05);
+    }
+
+    .video-play-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      z-index: 2;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .video-play-btn:hover {
+      background: rgba(0, 188, 212, 0.8);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .update-type-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75em;
+      font-weight: 700;
+      z-index: 3;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      backdrop-filter: blur(5px);
+    }
+
+    .update-info {
+      padding: 20px;
+    }
+
+    .update-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .update-title h3 {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 5px;
+    }
+
+    .update-date {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .update-description {
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-size: 0.95em;
+    }
+
+    .update-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .update-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar-small {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--color-accent);
+    }
+
+    .author-name {
+      font-size: 0.95em;
+      font-weight: 500;
+    }
+
+    .admin-badge {
+      background: linear-gradient(135deg, #ff4757, #ff3742);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.7em;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    .update-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .share-btn, .copy-id-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex: 1;
+      font-size: 0.9em;
+    }
+
+    .share-btn {
+      background: linear-gradient(135deg, var(--color-success), #059669);
+      color: white;
+    }
+
+    .share-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .copy-id-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .copy-id-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    /* Product Card Specific */
+    .product-card .get-btn {
+      background: linear-gradient(135deg, var(--color-warning), #d97706);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .product-card .get-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Bottom Navigation */
+    .main-footer-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 990;
+      background: rgba(10, 10, 18, 0.7);
+      backdrop-filter: blur(25px) saturate(150%);
+      -webkit-backdrop-filter: blur(25px) saturate(150%);
+      border-top: 1px solid rgba(0, 188, 212, 0.3);
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5), 0 -2px 10px rgba(0, 188, 212, 0.1);
+    }
+
+    .footer-items {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .feed-div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-text-muted);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .feed-div i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+      transition: color 0.3s;
+    }
+
+    .feed-div.active {
+      color: var(--color-primary);
+      transform: scale(1.05);
+    }
+
+    .feed-div.active i {
+      color: var(--color-primary);
+      text-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+    }
+
+    .feed-div:hover {
+      color: var(--color-primary);
+    }
+
+    /* Footer */
+    .main-footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--color-text-muted);
+      font-size: 0.9em;
+      margin-top: 50px;
+      margin-bottom: 80px;
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--color-accent);
+      text-decoration: underline;
+    }
+
+    .credits {
+      color: var(--color-text-muted);
+      font-size: 0.9em;
+    }
+
+    .credits a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .credits a:hover {
+      text-decoration: underline;
+    }
+
+    /* Loading Animation */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(0, 188, 212, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--color-accent);
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      color: var(--color-text-muted);
+      font-size: 1.1em;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--color-text-muted);
+    }
+
+    .empty-icon {
+      font-size: 4em;
+      color: rgba(0, 188, 212, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: var(--color-text);
+    }
+
+    .empty-state p {
+      font-size: 1.1em;
+      opacity: 0.8;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 17, 30, 0.95);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      z-index: 2001;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.3s ease;
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* Video Modal */
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 5, 26, 0.95);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .video-modal.active {
+      display: flex;
+    }
+
+    .video-modal-content {
+      background: rgba(15, 17, 30, 0.95);
+      padding: 20px;
+      border-radius: 16px;
+      max-width: 800px;
+      width: 90%;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      box-shadow: 0 0 40px rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      position: relative;
+    }
+
+    .video-modal-wrapper {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .video-modal-wrapper video {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .close-video-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .close-video-btn:hover {
+      background: rgba(239, 68, 68, 0.8);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="menu-btn" id="openSidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-size: 1.8em;">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <a href="homepage.html" class="nav-btn">
+        <i class="fas fa-home"></i>
+        Home
+      </a>
+
+      <a href="apk.html" class="nav-btn">
+        <i class="fas fa-download"></i>
+        APK Share
+      </a>
+
+      <a href="Users/users.html" class="nav-btn">
+        <i class="fas fa-users"></i>
+        Users
+      </a>
+
+      <a href="Chats/chats.html" class="nav-btn">
+        <i class="fas fa-comments"></i>
+        Messages
+      </a>
+
+      <!-- Admin Only Section -->
+      <div id="adminSection" style="display: none;">
+        <a href="Host/host.html" class="nav-btn">
+          <i class="fas fa-upload"></i>
+          Upload Project
+        </a>
+      </div>
+
+      <a href="Settings/settings.html" class="nav-btn">
+        <i class="fas fa-cog"></i>
+        Settings
+      </a>
+
+      <button class="nav-btn" id="logOutBtn" style="margin-top: auto; background: rgba(229, 57, 53, 0.1); border-color: rgba(229, 57, 53, 0.3); color: #e53935;">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <!-- Updates Header -->
+    <div class="updates-header">
+      <h1>Motion-Flow Updates</h1>
+      <p>Stay informed with the latest news, announcements, and community updates</p>
+    </div>
+    
+    <!-- Admin Controls (Only visible to admins) -->
+    <div class="admin-controls" id="adminControls" style="display: none;">
+      <div class="admin-panel">
+        <h2><i class="fas fa-crown"></i> Admin Panel</h2>
+        <div class="create-update-form">
+          <div class="form-group">
+            <label for="updateTitle"><i class="fas fa-heading"></i> Update Title</label>
+            <input type="text" id="updateTitle" placeholder="Enter update title...">
+          </div>
+          
+          <div class="form-group">
+            <label for="updateDescription"><i class="fas fa-align-left"></i> Description</label>
+            <textarea id="updateDescription" placeholder="Enter update description..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="updateType"><i class="fas fa-tag"></i> Update Type</label>
+            <select id="updateType">
+              <option value="announcement">Announcement</option>
+              <option value="product">Product</option>
+              <option value="video">Video Update</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="updateMedia"><i class="fas fa-image"></i> Media (Image or Video)</label>
+            <input type="file" id="updateMedia" accept="image/*,video/*">
+            <div class="media-preview">
+              <div class="image-preview" id="mediaPreview">
+                <span style="color: var(--color-text-muted); font-size: 0.9em;">No media selected</span>
+              </div>
+            </div>
+          </div>
+          
+          <button class="publish-btn" id="publishUpdate">
+            <i class="fas fa-paper-plane"></i> Publish Update
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Updates Grid -->
+    <div class="updates-container" id="updatesContainer">
+      <!-- Updates will be loaded here -->
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Support</a>
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Privacy</a>
+      </div>
+      <div class="credits">
+        Made with <i class="fas fa-heart" style="color: #ef4444;"></i> by <a href="https://t.me/eclipsia_techs" target="_blank">eclipsia-techs</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bottom Navigation -->
+  <footer class="main-footer-nav">
+    <div class="footer-items">
+      <a href="../homepage.html" class="feed-div">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      
+      <a href="/updates/updates.html" class="feed-div active">
+        <i class="fas fa-bell"></i>
+        <span>Updates</span>
+      </a>
+      
+      <a href="../Live_Chat/live.html" class="feed-div">
+        <i class="fas fa-comments"></i>
+        <span>Live Chat</span>
+      </a>
+      
+      <a href="../profile/profile.html" class="feed-div">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <!-- Video Modal -->
+  <div class="video-modal" id="videoModal">
+    <div class="video-modal-content">
+      <div class="video-modal-wrapper">
+        <button class="close-video-btn" onclick="closeVideoModal()">
+          <i class="fas fa-times"></i>
+        </button>
+        <video id="modalVideo" controls>
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { ref, set, getDatabase, push, onValue, get, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // Use the SAME Firebase config as homepage.html
+    const firebaseConfig = {
+      apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+      authDomain: "motion-flow-47450.firebasestorage.app",
+      databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+      projectId: "motion-flow-47450",
+      storageBucket: "motion-flow-47450.firebasestorage.app",
+      messagingSenderId: "686875529848",
+      appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+      measurementId: "G-K46N8C1HFQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase();
+
+    console.log('🔥 Motion-Flow Updates initialized');
+
+    // DOM Elements
+    const updatesContainer = document.getElementById("updatesContainer");
+    const sidebar = document.getElementById('sidebar');
+    const openSidebar = document.getElementById('openSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const adminControls = document.getElementById('adminControls');
+    const publishUpdateBtn = document.getElementById('publishUpdate');
+    const updateTitle = document.getElementById('updateTitle');
+    const updateDescription = document.getElementById('updateDescription');
+    const updateType = document.getElementById('updateType');
+    const updateMedia = document.getElementById('updateMedia');
+    const mediaPreview = document.getElementById('mediaPreview');
+    const logOutBtn = document.getElementById("logOutBtn");
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+
+    // User state
+    let currentUserId = null;
+    let currentUserData = null;
+    let sidebarOpen = false;
+    let selectedMediaFile = null;
+    let selectedMediaType = null;
+
+    // Admin users
+    const adminUsers = [
+      "YOUR_ADMIN_UID_HERE"
+    ];
+
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      toastMessage.textContent = message;
+      toast.className = `toast ${type}`;
+      toastIcon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Sidebar functionality
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      if (sidebarOpen) {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      } else {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+      }
+    }
+
+    openSidebar.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Logout functionality
+    logOutBtn.addEventListener("click", async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          await update(ref(db, "users/" + user.uid), {
+            status: "offline",
+          });
+        }
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Logout failed:", error);
+        showToast("Something went wrong while logging out.", "error");
+      }
+    });
+
+    // Media upload preview
+    updateMedia.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        selectedMediaFile = file;
+        selectedMediaType = file.type.startsWith('video/') ? 'video' : 'image';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          if (selectedMediaType === 'video') {
+            mediaPreview.innerHTML = `
+              <button class="remove-media-btn" onclick="removeSelectedMedia()">
+                <i class="fas fa-times"></i>
+              </button>
+              <video src="${e.target.result}" controls style="width: 100%; height: 100%; object-fit: cover;"></video>
+            `;
+          } else {
+            mediaPreview.innerHTML = `
+              <button class="remove-media-btn" onclick="removeSelectedMedia()">
+                <i class="fas fa-times"></i>
+              </button>
+              <img src="${e.target.result}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+            `;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Remove selected media
+    window.removeSelectedMedia = function() {
+      selectedMediaFile = null;
+      selectedMediaType = null;
+      updateMedia.value = '';
+      mediaPreview.innerHTML = '<span style="color: var(--color-text-muted); font-size: 0.9em;">No media selected</span>';
+    };
+
+    // Publish update
+    publishUpdateBtn.addEventListener('click', async function() {
+      if (!updateTitle.value.trim() || !updateDescription.value.trim()) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+
+      try {
+        const updateId = 'update_' + Date.now();
+        const mediaUrl = selectedMediaFile ? await uploadMedia(selectedMediaFile, updateId) : null;
+        
+        const updateData = {
+          id: updateId,
+          title: updateTitle.value.trim(),
+          description: updateDescription.value.trim(),
+          type: updateType.value,
+          mediaType: selectedMediaType,
+          mediaUrl: mediaUrl,
+          authorId: currentUserId,
+          authorName: currentUserData?.username || 'Admin',
+          createdAt: Date.now()
+        };
+
+        // Save to database
+        await set(ref(db, `updates/${updateId}`), updateData);
+        
+        // Clear form
+        updateTitle.value = '';
+        updateDescription.value = '';
+        updateMedia.value = '';
+        removeSelectedMedia();
+        
+        showToast('Update published successfully!', 'success');
+      } catch (error) {
+        console.error('Error publishing update:', error);
+        showToast('Failed to publish update: ' + error.message, 'error');
+      }
+    });
+
+    // Upload media function
+    async function uploadMedia(file, updateId) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          resolve(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Handle product get button click
+    window.handleGetProduct = function(productId, productName) {
+      const confirmGet = confirm(`Get "${productName}" for free?`);
+      if (!confirmGet) return;
+
+      window.open('https://t.me/eclipsia_techs', '_blank');
+      showToast(`Success! Contact us on Telegram to get "${productName}"`, 'success');
+    };
+
+    // Copy ID function
+    window.copyUpdateId = function(updateId) {
+      navigator.clipboard.writeText(updateId).then(() => {
+        showToast('Update ID copied to clipboard!', 'success');
+      }).catch(err => {
+        console.error('Failed to copy ID: ', err);
+        showToast('Failed to copy ID', 'error');
+      });
+    };
+
+    // Share update function
+    window.shareUpdate = function(updateId, updateTitle) {
+      const shareUrl = `${window.location.origin}${window.location.pathname}?update=${updateId}`;
+      const shareText = `Check out "${updateTitle}" on Motion-Flow Updates!`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: updateTitle,
+          text: shareText,
+          url: shareUrl
+        }).then(() => {
+          showToast('Update shared successfully!', 'success');
+        }).catch(err => {
+          console.error('Error sharing:', err);
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('Update link copied to clipboard!', 'success');
+          });
+        });
+      } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showToast('Update link copied to clipboard!', 'success');
+        });
+      }
+    };
+
+    // Play video function
+    window.playVideo = function(videoUrl) {
+      if (!videoUrl) {
+        showToast('No video available', 'error');
+        return;
+      }
+      
+      modalVideo.src = videoUrl;
+      modalVideo.load();
+      videoModal.classList.add('active');
+    };
+
+    // Close video modal
+    window.closeVideoModal = function() {
+      videoModal.classList.remove('active');
+      modalVideo.pause();
+      modalVideo.src = '';
+    };
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        console.log('✅ User logged in:', user.uid);
+        
+        // Load user data
+        const userRef = ref(db, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          if (snapshot.exists()) {
+            currentUserData = snapshot.val();
+            
+            // Check if user is admin
+            if (adminUsers.includes(user.uid)) {
+              adminControls.style.display = 'block';
+            }
+          }
+        });
+        
+        // Load updates data
+        loadUpdatesData();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Example updates data with video update
+    const exampleUpdates = [
+      {
+        id: 'update_1',
+        title: 'New Motion Graphics Pack Released!',
+        description: 'We just launched our premium motion graphics pack with 50+ high-quality templates for After Effects. Perfect for content creators looking to enhance their videos with professional animations.',
+        type: 'announcement',
+        mediaType: 'image',
+        mediaUrl: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        authorId: 'admin_001',
+        authorName: 'Motion-Flow Team',
+        createdAt: Date.now() - (2 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: 'update_2',
+        title: 'Video Tutorial: Advanced Animation Techniques',
+        description: 'Watch our latest video tutorial where we demonstrate advanced animation techniques using After Effects. Learn how to create stunning visual effects and smooth transitions.',
+        type: 'video',
+        mediaType: 'video',
+        mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+        authorId: 'admin_001',
+        authorName: 'Motion-Flow Team',
+        createdAt: Date.now() - (5 * 24 * 60 * 60 * 1000)
+      },
+      {
+        id: 'update_3',
+        title: 'Cinematic Titles Pack Available',
+        description: 'Professional cinematic title animations perfect for YouTube videos, commercials, and social media content. Includes 15 unique title designs with easy customization options.',
+        type: 'product',
+        mediaType: 'image',
+        mediaUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        authorId: 'creator_001',
+        authorName: 'MotionMaster',
+        createdAt: Date.now() - (1 * 24 * 60 * 60 * 1000)
+      }
+    ];
+
+    // Updates data loading
+    function loadUpdatesData() {
+      showLoadingAnimation();
+      
+      onValue(ref(db, "updates"), (snapshot) => {
+        clearLoadingAnimation();
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const updates = Object.keys(data).map(key => ({
+            ...data[key],
+            id: key
+          }));
+          
+          updates.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          
+          console.log(`📰 Loaded ${updates.length} updates from database`);
+          renderUpdates(updates);
+        } else {
+          console.log('📰 No updates in database, showing example content');
+          renderUpdates(exampleUpdates);
+        }
+      }, (error) => {
+        console.error('Error loading updates:', error);
+        clearLoadingAnimation();
+        renderUpdates(exampleUpdates);
+      });
+    }
+
+    // Loading animation
+    function showLoadingAnimation() {
+      updatesContainer.innerHTML = `
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading updates...</div>
+        </div>
+      `;
+    }
+
+    function clearLoadingAnimation() {
+      updatesContainer.innerHTML = '';
+    }
+
+    // Render updates
+    function renderUpdates(updates) {
+      if (updates.length === 0) {
+        updatesContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-bell-slash"></i>
+            </div>
+            <h3>No updates yet</h3>
+            <p>Be the first to post an update!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      updates.forEach(update => {
+        createUpdateCard(update);
+      });
+    }
+
+    function createUpdateCard(update) {
+      const card = document.createElement('div');
+      card.className = `update-card ${update.type}`;
+      
+      const isAdmin = adminUsers.includes(update.authorId);
+      const hasMedia = update.mediaUrl && update.mediaUrl !== '#';
+      
+      card.innerHTML = `
+        ${hasMedia ? `
+          <div class="update-media-wrapper">
+            ${update.mediaType === 'video' ? `
+              <video src="${update.mediaUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                Your browser does not support the video tag.
+              </video>
+              <button class="video-play-btn" onclick="playVideo('${update.mediaUrl}')">
+                <i class="fas fa-play"></i>
+              </button>
+            ` : `
+              <img src="${update.mediaUrl}" alt="${update.title}" onerror="this.src='https://via.placeholder.com/400x250/1a1a2e/00bcd4?text=No+Image'">
+            `}
+            <div class="update-type-badge">
+              ${update.type === 'video' ? '📹 Video' : update.type === 'product' ? '🛒 Product' : '📢 Announcement'}
+            </div>
+          </div>
+        ` : ''}
+        
+        <div class="update-info">
+          <div class="update-header">
+            <div class="update-title">
+              <h3>${update.title}</h3>
+            </div>
+            <div class="update-date">
+              ${getTimeAgo(update.createdAt || Date.now())}
+            </div>
+          </div>
+          
+          <div class="update-description">
+            ${update.description}
+          </div>
+          
+          <div class="update-meta">
+            <div class="update-author">
+              <img src="https://via.placeholder.com/36/00bcd4/fff?text=${update.authorName?.charAt(0) || 'A'}" 
+                   class="user-avatar-small" 
+                   onerror="this.src='https://via.placeholder.com/36/00bcd4/fff?text=U'">
+              <span class="author-name">${update.authorName || 'Admin'}</span>
+              ${isAdmin ? '<span class="admin-badge">ADMIN</span>' : ''}
+            </div>
+          </div>
+          
+          <div class="update-actions">
+            <button class="share-btn" onclick="shareUpdate('${update.id}', '${update.title.replace(/'/g, "\\'")}')">
+              <i class="fas fa-share-alt"></i> Share
+            </button>
+            <button class="copy-id-btn" onclick="copyUpdateId('${update.id}')">
+              <i class="fas fa-copy"></i> Copy ID
+            </button>
+          </div>
+          
+          ${update.type === 'product' ? `
+            <button class="get-btn" onclick="handleGetProduct('${update.id}', '${update.title.replace(/'/g, "\\'")}')">
+              <i class="fas fa-shopping-cart"></i> Get Now
+            </button>
+          ` : ''}
+        </div>
+      `;
+      
+      updatesContainer.appendChild(card);
+    }
+
+    // Utility functions
+    function getTimeAgo(timestamp) {
+      const now = Date.now();
+      const diff = now - timestamp;
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      
+      if (days > 0) return `${days}d ago`;
+      if (hours > 0) return `${hours}h ago`;
+      if (minutes > 0) return `${minutes}m ago`;
+      return 'Just now';
+    }
+
+    // Close dialogs with escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (sidebarOpen) {
+          toggleSidebar();
+        }
+        if (videoModal.classList.contains('active')) {
+          closeVideoModal();
+        }
+      }
+    });
+
+    // Close video modal when clicking outside
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) {
+        closeVideoModal();
+      }
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('📰 Updates page loaded');
+      const hash = window.location.hash;
+      const params = new URLSearchParams(window.location.search);
+      const updateId = params.get('update');
+      
+      if (updateId) {
+        console.log('📰 Loading specific update from URL:', updateId);
+        // You could scroll to or highlight a specific update here
+      }
+    });
+  </script>
+</body>
+</html>

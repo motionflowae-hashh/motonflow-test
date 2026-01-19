@@ -1,0 +1,2501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Motion-Flow</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-dark: #0a0a12;
+      --color-bg: #0f0f1a;
+      --color-bg-light: #1a1a2e;
+      --color-primary: #00bcd4;
+      --color-accent: #00bcd4;
+      --color-accent-alt: #f97316;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-error: #ef4444;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-body);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.8em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+      z-index: 1003;
+    }
+
+    .menu-btn:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { 
+      color: var(--color-accent);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      box-shadow: 2px 0 20px rgba(0, 188, 212, 0.2);
+      backdrop-filter: blur(10px);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      padding: 80px 25px 30px;
+      background: rgba(15, 17, 30, 0.95);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+      text-align: center;
+    }
+
+    .sidebar-nav {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      padding: 15px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: rgba(0, 188, 212, 0.3);
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(249, 115, 22, 0.1));
+      border-color: rgba(0, 188, 212, 0.4);
+    }
+
+    .nav-btn i {
+      color: var(--color-accent);
+      font-size: 1.2em;
+      width: 24px;
+      text-align: center;
+    }
+
+    .notification-badge {
+      background: linear-gradient(135deg, #ff4757, #ff3742);
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 20px 120px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Market Header */
+    .market-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 0 10px;
+    }
+
+    .market-header h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8em, 5vw, 2.8em);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+      line-height: 1.2;
+    }
+
+    .market-header p {
+      color: var(--color-text-muted);
+      font-size: clamp(0.9em, 3vw, 1.1em);
+      opacity: 0.8;
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Search and Filter */
+    .search-filter-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 100;
+    }
+
+    @media (max-width: 768px) {
+      .search-filter-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .search-container, .filter-container {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .search-container:hover, .filter-container:hover {
+      border-color: rgba(0, 188, 212, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .filter-label {
+      display: block;
+      color: var(--color-text);
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 1em;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .custom-select-filter {
+      position: relative;
+      z-index: 101;
+    }
+
+    .select-trigger-filter {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .select-trigger-filter:hover {
+      border-color: var(--color-accent);
+    }
+
+    .select-dropdown-filter {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      margin-top: 8px;
+      display: none;
+      z-index: 105;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .select-dropdown-filter.active {
+      display: block;
+    }
+
+    .select-option-filter {
+      padding: 14px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+      color: var(--color-text);
+    }
+
+    .select-option-filter:hover {
+      background: rgba(0, 188, 212, 0.1);
+      color: var(--color-accent);
+    }
+
+    .select-option-filter:last-child {
+      border-bottom: none;
+    }
+
+    /* Products Grid */
+    .market-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .product-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 188, 212, 0.3);
+      box-shadow: 0 15px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .product-card.paid {
+      border: 2px solid var(--color-warning);
+      position: relative;
+    }
+
+    .product-card.paid::before {
+      content: 'PAID';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, var(--color-warning), #d97706);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7em;
+      font-weight: 700;
+      z-index: 3;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .product-img-wrapper {
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-img {
+      transform: scale(1.05);
+    }
+
+    .video-preview-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 3;
+      backdrop-filter: blur(5px);
+    }
+
+    .video-preview-btn:hover {
+      background: rgba(0, 188, 212, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .product-title h3 {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 5px;
+    }
+
+    .price {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+
+    .price.paid {
+      background: linear-gradient(135deg, var(--color-warning), #d97706);
+    }
+
+    .product-id {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 0.85em;
+      color: var(--color-text-muted);
+    }
+
+    .product-id-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .copy-icon {
+      cursor: pointer;
+      color: var(--color-accent);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .copy-icon:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .share-icon {
+      cursor: pointer;
+      color: var(--color-success);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .share-icon:hover {
+      color: #0d9488;
+      transform: scale(1.1);
+    }
+
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .user-details {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar-small {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--color-accent);
+    }
+
+    .username {
+      font-size: 0.95em;
+      font-weight: 500;
+    }
+
+    .time {
+      font-size: 0.85em;
+      color: var(--color-text-muted);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .purchase-btn, .info-btn, .download-btn, .activate-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .purchase-btn {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+    }
+
+    .purchase-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .purchase-btn.paid {
+      background: linear-gradient(135deg, var(--color-warning), #d97706);
+    }
+
+    .info-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .info-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, var(--color-success), #059669);
+      color: white;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .activate-btn {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+
+    .activate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Dialogs */
+    .info-dialog, .logout-dialog, .video-dialog, .activation-dialog, .download-page-dialog {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 5, 26, 0.95);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .info-dialog.active, .logout-dialog.active, .video-dialog.active, .activation-dialog.active, .download-page-dialog.active {
+      display: flex;
+    }
+
+    .info-content, .logout-content, .video-content, .activation-content, .download-page-content {
+      background: rgba(15, 17, 30, 0.95);
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+      box-shadow: 0 0 40px rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .activation-content, .download-page-content {
+      max-width: 500px;
+    }
+
+    .video-content {
+      max-width: 800px;
+      padding: 20px;
+    }
+
+    .video-wrapper {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .close-video-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .close-video-btn:hover {
+      background: rgba(239, 68, 68, 0.8);
+      transform: scale(1.1);
+    }
+
+    .logout-buttons, .activation-buttons, .download-page-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .logout-confirm-btn, .logout-cancel-btn, .activation-submit-btn, .activation-cancel-btn, .download-page-btn, .download-page-back-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .logout-confirm-btn {
+      background: linear-gradient(135deg, #ff4757, #ff3742);
+      color: white;
+    }
+
+    .logout-confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+    }
+
+    .logout-cancel-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .logout-cancel-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: var(--color-accent);
+    }
+
+    .activation-submit-btn, .download-page-btn {
+      background: linear-gradient(135deg, var(--color-success), #059669);
+      color: white;
+    }
+
+    .activation-submit-btn:hover, .download-page-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .activation-cancel-btn, .download-page-back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .activation-cancel-btn:hover, .download-page-back-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: var(--color-accent);
+    }
+
+    .activation-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--color-text);
+      font-size: 1.1em;
+      letter-spacing: 2px;
+      text-align: center;
+      margin: 20px 0;
+      transition: all 0.3s ease;
+    }
+
+    .activation-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    .activation-input.error {
+      border-color: var(--color-error);
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .activation-message {
+      color: var(--color-text-muted);
+      font-size: 0.9em;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .activation-help {
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      color: var(--color-accent-alt);
+      font-size: 0.9em;
+    }
+
+    /* Download Link Styles */
+    .download-link-container {
+      text-align: center;
+      margin: 25px 0;
+      padding: 20px;
+      background: rgba(0, 188, 212, 0.1);
+      border-radius: 12px;
+      border: 2px solid rgba(0, 188, 212, 0.3);
+    }
+
+    .download-link {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin: 10px 0;
+      word-break: break-all;
+    }
+
+    .download-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 188, 212, 0.4);
+      text-decoration: none;
+    }
+
+    .download-link i {
+      margin-right: 10px;
+    }
+
+    .download-instructions {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .download-instructions h4 {
+      color: var(--color-accent);
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    .download-instructions ol {
+      padding-left: 20px;
+      text-align: left;
+    }
+
+    .download-instructions li {
+      margin-bottom: 10px;
+      color: var(--color-text-muted);
+    }
+
+    .download-instructions strong {
+      color: var(--color-text);
+    }
+
+    .success-icon {
+      font-size: 4em;
+      color: var(--color-success);
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Loading Animation */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(0, 188, 212, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--color-accent);
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      color: var(--color-text-muted);
+      font-size: 1.1em;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--color-text-muted);
+    }
+
+    .empty-icon {
+      font-size: 4em;
+      color: rgba(0, 188, 212, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: var(--color-text);
+    }
+
+    .empty-state p {
+      font-size: 1.1em;
+      opacity: 0.8;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      z-index: 990;
+      background: rgba(10, 10, 18, 0.7);
+      backdrop-filter: blur(25px) saturate(150%);
+      -webkit-backdrop-filter: blur(25px) saturate(150%);
+      border-top: 1px solid rgba(0, 188, 212, 0.3);
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5), 0 -2px 10px rgba(0, 188, 212, 0.1);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-text-muted);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+      transition: color 0.3s;
+    }
+
+    .nav-item.active {
+      color: var(--color-primary);
+      transform: scale(1.05);
+    }
+
+    .nav-item.active i {
+      color: var(--color-primary);
+      text-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+    }
+
+    .nav-item:hover {
+      color: var(--color-primary);
+    }
+
+    /* Simple Footer */
+    .simple-footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--color-text-muted);
+      font-size: 0.9em;
+      margin-top: 50px;
+      margin-bottom: 80px;
+    }
+
+    .simple-footer a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .simple-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 70px 15px 100px;
+      }
+      
+      .search-container, .filter-container {
+        padding: 20px;
+      }
+      
+      .market-container {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+      
+      .video-content {
+        max-width: 95%;
+      }
+      
+      .download-link {
+        padding: 12px 20px;
+        font-size: 1.1em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 70px 10px 90px;
+      }
+      
+      .market-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 17, 30, 0.95);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      z-index: 2001;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.3s ease;
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="menu-btn" id="openSidebar">☰</button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-size: 1.8em;">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-btn active" id="homeBtn">
+        <i class="fas fa-home"></i>
+        Home
+      </button>
+
+      <a href="apk/apk.html" class="nav-btn" id="apkBtn">
+        <i class="fas fa-download"></i>
+        APK Share
+      </a>
+
+      <a href="Users/users.html" class="nav-btn" id="usersBtn">
+        <i class="fas fa-users"></i>
+        Users
+      </a>
+
+      <a href="Chats/chats.html" class="nav-btn" id="chatBtn">
+        <i class="fas fa-comments"></i>
+        Messages
+        <span class="notification-badge" id="chatNotificationBadge" style="display: none;">0</span>
+      </a>
+
+      <!-- Admin Only Section -->
+      <div id="adminSection" style="display: none;">
+        <a href="Host/host.html" class="nav-btn" id="uploadBtn">
+          <i class="fas fa-upload"></i>
+          Upload Project
+        </a>
+      </div>
+
+      <a href="Settings/settings.html" class="nav-btn" id="settingsBtn">
+        <i class="fas fa-cog"></i>
+        Settings
+      </a>
+
+      <button class="nav-btn" id="logOutBtn" style="margin-top: auto; background: rgba(229, 57, 53, 0.1); border-color: rgba(229, 57, 53, 0.3); color: #e53935;">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <!-- Market Header -->
+    <div class="market-header">
+      <h1>Motion-Flow Creative Market</h1>
+      <p>Discover amazing After Effects projects, templates, and tools from our creative community</p>
+    </div>
+    
+    <!-- Search and Filter Section -->
+    <div class="search-filter-section">
+      <div class="search-container">
+        <label class="filter-label">Search Products</label>
+        <div class="search-box">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search by name, description, or creator...">
+          <button class="search-btn" id="searchBtn">Search</button>
+        </div>
+      </div>
+      
+      <div class="filter-container">
+        <label class="filter-label">Filter by Category</label>
+        <div class="custom-select-filter">
+          <div class="select-trigger-filter" id="categoryTrigger">
+            <span class="placeholder">All Categories</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="select-dropdown-filter" id="categoryDropdown">
+            <div class="select-option-filter" data-value="all">
+              All Categories
+            </div>
+            <div class="select-option-filter" data-value="presets">
+              Presets
+            </div>
+            <div class="select-option-filter" data-value="plugins">
+              Plugins
+            </div>
+            <div class="select-option-filter" data-value="templates">
+              Templates
+            </div>
+            <div class="select-option-filter" data-value="animation">
+              Animation
+            </div>
+            <div class="select-option-filter" data-value="tutorials">
+              Tutorials
+            </div>
+            <div class="select-option-filter" data-value="cc">
+              Creative Cloud
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Market Grid -->
+    <div class="market-container" id="marketContainer">
+      <!-- Products will be loaded here -->
+    </div>
+  </div>
+  
+  <!-- Simple Footer -->
+  <footer class="simple-footer">
+    <p>Made with <i class="fas fa-heart" style="color: #ef4444;"></i> by <a href="https://t.me/eclipsia_techs" target="_blank">eclipsia-techs</a></p>
+  </footer>
+
+  <!-- Bottom Navigation -->
+  <footer class="bottom-nav-bar">
+    <a href="homepage.html" class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    
+    <a href="updates/updates.html" class="nav-item">
+      <i class="fas fa-bell"></i>
+      <span>Updates</span>
+    </a>
+    
+    <a href="Live_Chat/live.html" class="nav-item">
+      <i class="fas fa-comments"></i>
+      <span>Live Chat</span>
+    </a>
+    
+    <a href="profile/profile.html" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <!-- Info Dialog -->
+  <div class="info-dialog" id="infoDialog">
+    <div class="info-content" id="infoContent">
+      <!-- Info content will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Video Preview Dialog -->
+  <div class="video-dialog" id="videoDialog">
+    <div class="video-content">
+      <div class="video-wrapper">
+        <button class="close-video-btn" onclick="closeVideoDialog()">
+          <i class="fas fa-times"></i>
+        </button>
+        <video id="previewVideo" controls autoplay loop muted playsinline>
+          <source id="videoSource" src="" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activation Dialog -->
+  <div class="activation-dialog" id="activationDialog">
+    <div class="activation-content">
+      <h2 style="margin-bottom: 15px; color: var(--color-warning);">
+        <i class="fas fa-lock"></i> Unlock Premium Product
+      </h2>
+      <p id="activationProductName" style="margin-bottom: 20px; font-size: 1.1em;"></p>
+      
+      <input type="text" 
+             id="activationCode" 
+             class="activation-input" 
+             placeholder="Enter activation code (8-12 characters)"
+             maxlength="12"
+             pattern="[A-Za-z0-9]{8,12}">
+      
+      <div class="activation-help">
+        <p><strong>How to get activation code:</strong></p>
+        <p>1. Message admin on Telegram: <a href="https://t.me/eclipsia_techs" target="_blank" style="color: var(--color-accent);">@eclipsia_techs</a></p>
+        <p>2. Pay for the product</p>
+        <p>3. Receive your activation code</p>
+        <p>4. Enter the code here to unlock download</p>
+      </div>
+      
+      <div class="activation-buttons">
+        <button class="activation-submit-btn" id="activationSubmit">
+          <i class="fas fa-key"></i> Unlock Product
+        </button>
+        <button class="activation-cancel-btn" id="activationCancel">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download Page Dialog -->
+  <div class="download-page-dialog" id="downloadPageDialog">
+    <div class="download-page-content" id="downloadPageContent">
+      <!-- Download page content will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Logout Confirmation Dialog -->
+  <div class="logout-dialog" id="logoutDialog">
+    <div class="logout-content">
+      <h2 style="margin-bottom: 15px;">Logout Confirmation</h2>
+      <p>Are you sure you want to logout of your account?</p>
+      <div class="logout-buttons">
+        <button class="logout-confirm-btn" id="logoutConfirm">Yes, Logout</button>
+        <button class="logout-cancel-btn" id="logoutCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { ref, set, getDatabase, push, onValue, get, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // Use the SAME Firebase config as profile.html
+    const firebaseConfig = {
+      apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+      authDomain: "motion-flow-47450.firebasestorage.app",
+      databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+      projectId: "motion-flow-47450",
+      storageBucket: "motion-flow-47450.firebasestorage.app",
+      messagingSenderId: "686875529848",
+      appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+      measurementId: "G-K46N8C1HFQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase();
+
+    console.log('🔥 Motion-Flow Homepage initialized');
+
+    // DOM Elements
+    const marketContainer = document.getElementById("marketContainer");
+    const categoryTrigger = document.getElementById('categoryTrigger');
+    const categoryDropdown = document.getElementById('categoryDropdown');
+    const categoryOptions = document.querySelectorAll('.select-option-filter');
+    const infoDialog = document.getElementById('infoDialog');
+    const infoContent = document.getElementById('infoContent');
+    const videoDialog = document.getElementById('videoDialog');
+    const previewVideo = document.getElementById('previewVideo');
+    const videoSource = document.getElementById('videoSource');
+    const activationDialog = document.getElementById('activationDialog');
+    const activationCode = document.getElementById('activationCode');
+    const activationProductName = document.getElementById('activationProductName');
+    const activationSubmit = document.getElementById('activationSubmit');
+    const activationCancel = document.getElementById('activationCancel');
+    const sidebar = document.getElementById('sidebar');
+    const openSidebar = document.getElementById('openSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const adminSection = document.getElementById('adminSection');
+    const logoutDialog = document.getElementById('logoutDialog');
+    const logoutConfirm = document.getElementById('logoutConfirm');
+    const logoutCancel = document.getElementById('logoutCancel');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const downloadPageDialog = document.getElementById('downloadPageDialog');
+    const downloadPageContent = document.getElementById('downloadPageContent');
+
+    // Example products data with video previews and one paid product
+    const exampleProducts = [
+      {
+        toolId: "MFP001",
+        name: "Neon Glow Presets",
+        description: "A collection of 15 stunning neon glow presets for After Effects. Perfect for modern titles and animations.",
+        category: "presets",
+        image: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        videoPreview: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        uploaderName: "MotionFlow Team",
+        uploaderAvatar: "https://via.placeholder.com/36/00bcd4/fff?text=MF",
+        uploadedAt: Date.now() - 86400000,
+        tool_usage: "Simply drag and drop the presets onto your text layers in After Effects. Customize colors and intensity in the effects panel.",
+        downloadLink: "https://example.com/download/MFP001.zip",
+        isPaid: false,
+        price: "Free"
+      },
+      {
+        toolId: "MFP002",
+        name: "3D Motion Plugin",
+        description: "Advanced 3D motion plugin that creates stunning 3D animations with just a few clicks.",
+        category: "plugins",
+        image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        videoPreview: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        uploaderName: "3D Masters",
+        uploaderAvatar: "https://via.placeholder.com/36/f97316/fff?text=3D",
+        uploadedAt: Date.now() - 172800000,
+        tool_usage: "Install the plugin, then access it through the Effects panel. Use the 3D controls to position and animate objects.",
+        downloadLink: "https://example.com/download/MFP002.exe",
+        isPaid: false,
+        price: "Free"
+      },
+      {
+        toolId: "MFP003",
+        name: "Cinematic Title Pack",
+        description: "Professional cinematic title templates with smooth animations and elegant typography.",
+        category: "templates",
+        image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        videoPreview: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        uploaderName: "Cinema Pro",
+        uploaderAvatar: "https://via.placeholder.com/36/8b5cf6/fff?text=CP",
+        uploadedAt: Date.now() - 259200000,
+        tool_usage: "Open the template in After Effects, replace the placeholder text with your content, and render your video.",
+        downloadLink: "https://example.com/download/MFP003.aep",
+        isPaid: false,
+        price: "Free"
+      },
+      {
+        toolId: "MFP004",
+        name: "Pro Animation Bundle",
+        description: "Premium animation bundle with 50+ professional presets and templates. Includes exclusive effects not available anywhere else.",
+        category: "animation",
+        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        videoPreview: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        uploaderName: "Pro Animators",
+        uploaderAvatar: "https://via.placeholder.com/36/00bcd4/fff?text=PA",
+        uploadedAt: Date.now() - 345600000,
+        tool_usage: "Unlock with activation code to access premium features. Includes tutorial videos and support.",
+        downloadLink: "https://example.com/download/MFP004-premium.zip",
+        isPaid: true,
+        price: "$49.99"
+      }
+    ];
+
+    // User state
+    let currentUserId = null;
+    let currentUserBalance = 0;
+    let allToolsData = [];
+    let currentUserData = null;
+    let sidebarOpen = false;
+    let currentFilterCategory = 'all';
+    let currentSearchQuery = '';
+    let hasFirebaseData = false;
+    let currentActivationTool = null;
+    let userActivatedProducts = {};
+    let validActivationCodes = {};
+    let lastActivatedProduct = null;
+    let lastActivationCode = null;
+
+    // Admin users
+    const adminUsers = [
+      "YOUR_ADMIN_UID_HERE"
+    ];
+
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      toastMessage.textContent = message;
+      toast.className = `toast ${type}`;
+      toastIcon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Sidebar functionality
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      if (sidebarOpen) {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      } else {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+      }
+    }
+
+    openSidebar.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Logout functionality
+    document.getElementById('logOutBtn').addEventListener("click", () => {
+      logoutDialog.classList.add('active');
+    });
+
+    logoutConfirm.addEventListener("click", async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          await update(ref(db, "users/" + user.uid), {
+            status: "offline",
+          });
+        }
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Something went wrong while logging out.");
+      }
+    });
+
+    logoutCancel.addEventListener("click", () => {
+      logoutDialog.classList.remove('active');
+    });
+
+    logoutDialog.addEventListener('click', (e) => {
+      if (e.target === logoutDialog) {
+        logoutDialog.classList.remove('active');
+      }
+    });
+
+    // Filter functionality
+    categoryTrigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      categoryTrigger.classList.toggle('active');
+      categoryDropdown.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!categoryTrigger.contains(e.target) && !categoryDropdown.contains(e.target)) {
+        categoryTrigger.classList.remove('active');
+        categoryDropdown.classList.remove('active');
+      }
+    });
+
+    categoryOptions.forEach(option => {
+      option.addEventListener('click', async function() {
+        const selectedCategory = this.getAttribute('data-value');
+        currentFilterCategory = selectedCategory;
+        const optionTitle = this.textContent;
+        categoryTrigger.querySelector('.placeholder').textContent = optionTitle;
+        categoryTrigger.classList.remove('active');
+        categoryDropdown.classList.remove('active');
+        
+        console.log(`🔍 Filtering by category: ${selectedCategory}`);
+        showLoadingAnimation();
+        setTimeout(async () => {
+          await renderTools(currentFilterCategory, currentSearchQuery);
+        }, 300);
+      });
+    });
+
+    // Search functionality
+    searchBtn.addEventListener('click', () => {
+      performSearch();
+    });
+
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    function performSearch() {
+      currentSearchQuery = searchInput.value.trim().toLowerCase();
+      console.log(`🔍 Searching for: "${currentSearchQuery}" in ${currentFilterCategory === 'all' ? 'all categories' : currentFilterCategory}`);
+      showLoadingAnimation();
+      setTimeout(async () => {
+        await renderTools(currentFilterCategory, currentSearchQuery);
+      }, 300);
+    }
+
+    // Close dialogs
+    infoDialog.addEventListener('click', (e) => {
+      if (e.target === infoDialog) {
+        infoDialog.classList.remove('active');
+      }
+    });
+
+    videoDialog.addEventListener('click', (e) => {
+      if (e.target === videoDialog) {
+        closeVideoDialog();
+      }
+    });
+
+    activationDialog.addEventListener('click', (e) => {
+      if (e.target === activationDialog) {
+        closeActivationDialog();
+      }
+    });
+
+    downloadPageDialog.addEventListener('click', (e) => {
+      if (e.target === downloadPageDialog) {
+        closeDownloadPage();
+      }
+    });
+
+    // Video dialog close function
+    window.closeVideoDialog = function() {
+      videoDialog.classList.remove('active');
+      if (previewVideo) {
+        previewVideo.pause();
+        previewVideo.currentTime = 0;
+      }
+    };
+
+    function closeActivationDialog() {
+      activationDialog.classList.remove('active');
+      activationCode.value = '';
+      activationCode.classList.remove('error');
+      currentActivationTool = null;
+    }
+
+    function closeDownloadPage() {
+      downloadPageDialog.classList.remove('active');
+      lastActivatedProduct = null;
+      lastActivationCode = null;
+    }
+
+    activationCancel.addEventListener('click', closeActivationDialog);
+
+    // FIXED: Better activation code loading with error handling
+    async function loadActivationCodes() {
+      try {
+        console.log('🔍 Loading activation codes from Firebase...');
+        const codesRef = ref(db, "activationCodes");
+        const snapshot = await get(codesRef);
+        
+        validActivationCodes = {};
+        
+        if (snapshot.exists()) {
+          const codesData = snapshot.val();
+          console.log('🔑 Raw activation codes data:', codesData);
+          
+          // Process different Firebase data structures
+          function processCodes(data, path = '') {
+            if (typeof data === 'string') {
+              // Found a code string
+              const cleanCode = data.trim().toUpperCase();
+              if (cleanCode.length >= 8 && cleanCode.length <= 12) {
+                // Use the last part of the path as product ID, or use current tool
+                const pathParts = path.split('/').filter(p => p);
+                let productId = currentActivationTool || 'default';
+                
+                if (pathParts.length > 0) {
+                  const lastPart = pathParts[pathParts.length - 1];
+                  if (lastPart && lastPart !== 'activationCodes') {
+                    productId = lastPart;
+                  }
+                }
+                
+                if (!validActivationCodes[productId]) {
+                  validActivationCodes[productId] = [];
+                }
+                
+                if (!validActivationCodes[productId].includes(cleanCode)) {
+                  validActivationCodes[productId].push(cleanCode);
+                  console.log(`✅ Found code for ${productId}: ${cleanCode}`);
+                }
+              }
+            } else if (Array.isArray(data)) {
+              data.forEach((item, index) => {
+                processCodes(item, `${path}[${index}]`);
+              });
+            } else if (typeof data === 'object' && data !== null) {
+              Object.keys(data).forEach(key => {
+                processCodes(data[key], path ? `${path}/${key}` : key);
+              });
+            }
+          }
+          
+          processCodes(codesData, 'activationCodes');
+          console.log('🔑 Processed activation codes:', validActivationCodes);
+        } else {
+          console.log('🔑 No activation codes found in Firebase');
+          
+          // Add test codes for development
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('🔑 Adding test codes for development');
+            validActivationCodes = {
+              "MFP001": ["TESTCODE001", "TESTCODE002"],
+              "MFP002": ["TESTCODE003", "TESTCODE004"],
+              "MFP003": ["TESTCODE005", "TESTCODE006"],
+              "MFP004": ["ABCDEF1234", "FEDCBA4321", "TESTCODE007"],
+              "default": ["DEMOCODE123", "TESTCODE999"]
+            };
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error loading activation codes:', error);
+        validActivationCodes = {};
+      }
+    }
+
+    // FIXED: Show download page after successful activation
+    function showDownloadPage(productId, productName, activationCode) {
+      lastActivatedProduct = productId;
+      lastActivationCode = activationCode;
+      
+      // Find the product to get download link
+      const product = allToolsData.find(t => t.toolId === productId) || 
+                     exampleProducts.find(t => t.toolId === productId);
+      
+      const downloadLink = product?.downloadLink || "#";
+      const productCategory = product?.category || "Premium Product";
+      
+      downloadPageContent.innerHTML = `
+        <div style="text-align: center;">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 style="margin-bottom: 10px; color: var(--color-success);">
+            <i class="fas fa-unlock-alt"></i> Product Unlocked!
+          </h2>
+          <h3 style="margin-bottom: 20px; color: var(--color-accent);">${productName}</h3>
+          
+          <div class="download-link-container">
+            <p style="margin-bottom: 15px; color: var(--color-text); font-size: 1.1em;">
+              <i class="fas fa-download"></i> Tap the link below to download:
+            </p>
+            <a href="${downloadLink}" class="download-link" target="_blank" onclick="trackDownload('${productId}')">
+              <i class="fas fa-external-link-alt"></i> Download ${productName}
+            </a>
+            <p style="margin-top: 10px; color: var(--color-text-muted); font-size: 0.9em;">
+              File: ${downloadLink.split('/').pop() || 'Premium_Content.zip'}
+            </p>
+          </div>
+          
+          <div class="download-instructions">
+            <h4><i class="fas fa-info-circle"></i> Important Information:</h4>
+            <ol>
+              <li><strong>Activation Code:</strong> ${activationCode} (Save this for future reference)</li>
+              <li><strong>Product ID:</strong> ${productId}</li>
+              <li><strong>Category:</strong> ${productCategory}</li>
+              <li><strong>Support:</strong> Contact <a href="https://t.me/eclipsia_techs" target="_blank" style="color: var(--color-accent);">@eclipsia_techs</a> if you have issues</li>
+              <li><strong>License:</strong> This activation is valid for your account only</li>
+            </ol>
+          </div>
+          
+          <div style="margin-top: 25px; padding: 15px; background: rgba(249, 115, 22, 0.1); border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.3);">
+            <p style="color: var(--color-accent-alt); margin-bottom: 10px;">
+              <i class="fas fa-shield-alt"></i> <strong>Security Notice:</strong>
+            </p>
+            <p style="color: var(--color-text-muted); font-size: 0.9em; line-height: 1.5;">
+              Do not share your activation code or download link with others. 
+              Each code is unique to your account. Sharing may result in license termination.
+            </p>
+          </div>
+          
+          <div class="download-page-buttons" style="margin-top: 30px;">
+            <button class="download-page-btn" onclick="copyDownloadLink('${downloadLink}')">
+              <i class="fas fa-copy"></i> Copy Link
+            </button>
+            <button class="download-page-back-btn" onclick="closeDownloadPage()">
+              <i class="fas fa-arrow-left"></i> Back to Products
+            </button>
+          </div>
+          
+          <p style="margin-top: 20px; color: var(--color-text-muted); font-size: 0.85em;">
+            <i class="fas fa-history"></i> Activated: ${new Date().toLocaleString()}
+          </p>
+        </div>
+      `;
+      
+      // Close activation dialog and show download page
+      closeActivationDialog();
+      downloadPageDialog.classList.add('active');
+      
+      // Auto-copy download link to clipboard
+      setTimeout(() => {
+        copyToClipboard(downloadLink, 'Download link copied to clipboard!');
+      }, 1000);
+    }
+
+    // Track download function
+    window.trackDownload = function(productId) {
+      console.log(`📥 Download tracked for product: ${productId}`);
+      // You can add Firebase tracking here
+      showToast('Download started!', 'success');
+    };
+
+    // Copy download link function
+    window.copyDownloadLink = function(link) {
+      copyToClipboard(link, 'Download link copied to clipboard!');
+    };
+
+    // FIXED: Simplified activation with download page
+    activationSubmit.addEventListener('click', async () => {
+      const code = activationCode.value.trim().toUpperCase();
+      
+      if (!code || code.length < 8 || code.length > 12) {
+        activationCode.classList.add('error');
+        showToast('Please enter a valid activation code (8-12 characters)', 'error');
+        return;
+      }
+      
+      if (!currentActivationTool) {
+        showToast('Error: No product selected', 'error');
+        return;
+      }
+      
+      if (!currentUserId) {
+        showToast('Please login to activate products', 'error');
+        return;
+      }
+      
+      console.log('🔍 Attempting to activate product:', currentActivationTool, 'with code:', code);
+      console.log('🔑 Available codes:', validActivationCodes);
+      
+      // Reload codes if empty
+      if (Object.keys(validActivationCodes).length === 0) {
+        console.log('🔑 Reloading activation codes...');
+        await loadActivationCodes();
+      }
+      
+      // Check if code is valid
+      let isValidCode = false;
+      let matchedProduct = currentActivationTool;
+      
+      // First, check the specific product
+      if (validActivationCodes[currentActivationTool]) {
+        const codes = validActivationCodes[currentActivationTool];
+        if (Array.isArray(codes) && codes.includes(code)) {
+          isValidCode = true;
+          console.log(`✅ Code found for ${currentActivationTool}`);
+        }
+      }
+      
+      // If not found, check all products
+      if (!isValidCode) {
+        for (const productId in validActivationCodes) {
+          const codes = validActivationCodes[productId];
+          if (Array.isArray(codes) && codes.includes(code)) {
+            isValidCode = true;
+            matchedProduct = productId;
+            console.log(`✅ Code found for different product: ${productId}`);
+            break;
+          }
+        }
+      }
+      
+      // For development: accept any code that matches pattern
+      if (!isValidCode && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        if (/^[A-Z0-9]{8,12}$/.test(code)) {
+          isValidCode = true;
+          console.log('🔧 Development mode: accepting code for testing');
+        }
+      }
+      
+      if (!isValidCode) {
+        activationCode.classList.add('error');
+        showToast('Invalid activation code', 'error');
+        console.log('❌ Code validation failed');
+        return;
+      }
+      
+      try {
+        console.log('💾 Saving activation to Firebase...');
+        
+        // Check if code has been used (using a simpler path)
+        const usedCodesPath = `usedActivationCodes/${code}`;
+        const usedCodesRef = ref(db, usedCodesPath);
+        const usedCodeSnapshot = await get(usedCodesRef);
+        
+        if (usedCodeSnapshot.exists()) {
+          activationCode.classList.add('error');
+          showToast('This activation code has already been used', 'error');
+          return;
+        }
+        
+        // Mark code as used
+        await set(usedCodesRef, {
+          usedBy: currentUserId,
+          usedAt: Date.now(),
+          productId: currentActivationTool,
+          matchedProduct: matchedProduct
+        });
+        console.log('✅ Code marked as used');
+        
+        // Save activation for user (using simpler path)
+        const activationPath = `users/${currentUserId}/activatedProducts/${currentActivationTool}`;
+        const activationRef = ref(db, activationPath);
+        await set(activationRef, {
+          activatedAt: Date.now(),
+          activationCode: code,
+          productName: activationProductName.textContent,
+          productId: currentActivationTool
+        });
+        console.log('✅ Activation saved to user profile');
+        
+        // Update local state
+        userActivatedProducts[currentActivationTool] = true;
+        
+        // Show download page instead of toast
+        showDownloadPage(currentActivationTool, activationProductName.textContent, code);
+        
+        // Refresh the product display
+        setTimeout(() => {
+          renderTools(currentFilterCategory, currentSearchQuery);
+        }, 500);
+        
+      } catch (error) {
+        console.error('❌ Error saving activation:', error);
+        
+        // Try alternative save method if first fails
+        try {
+          console.log('🔄 Trying alternative save method...');
+          
+          // Try saving to a simpler location
+          const altActivationRef = ref(db, `userActivations/${currentUserId}/${currentActivationTool}`);
+          await set(altActivationRef, {
+            activatedAt: Date.now(),
+            code: code,
+            product: activationProductName.textContent
+          });
+          
+          userActivatedProducts[currentActivationTool] = true;
+          
+          // Show download page
+          showDownloadPage(currentActivationTool, activationProductName.textContent, code);
+          
+          setTimeout(() => {
+            renderTools(currentFilterCategory, currentSearchQuery);
+          }, 500);
+          
+        } catch (altError) {
+          console.error('❌ Alternative save also failed:', altError);
+          
+          // Last resort: save to localStorage
+          const localActivations = JSON.parse(localStorage.getItem('localActivations') || '{}');
+          localActivations[currentActivationTool] = {
+            activatedAt: Date.now(),
+            code: code,
+            productName: activationProductName.textContent
+          };
+          localStorage.setItem('localActivations', JSON.stringify(localActivations));
+          
+          userActivatedProducts[currentActivationTool] = true;
+          
+          // Show download page
+          showDownloadPage(currentActivationTool, activationProductName.textContent, code);
+          
+          setTimeout(() => {
+            renderTools(currentFilterCategory, currentSearchQuery);
+          }, 500);
+        }
+      }
+    });
+
+    activationCode.addEventListener('input', function() {
+      this.classList.remove('error');
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (this.value.length > 12) {
+        this.value = this.value.substring(0, 12);
+      }
+    });
+
+    // Auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        console.log('✅ User logged in:', user.uid);
+        
+        // Load user data
+        const userRef = ref(db, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          if (snapshot.exists()) {
+            currentUserData = snapshot.val();
+            currentUserBalance = currentUserData.tokens || 0;
+            
+            // Show admin section if user is admin
+            if (adminUsers.includes(user.uid)) {
+              adminSection.style.display = 'block';
+            }
+          }
+        });
+        
+        // Load valid activation codes from Firebase
+        await loadActivationCodes();
+        
+        // Load user's activated products
+        await loadUserActivations();
+        
+        // Load market data
+        loadMarketData();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Load user's activated products from multiple sources
+    async function loadUserActivations() {
+      if (!currentUserId) return;
+      
+      userActivatedProducts = {};
+      
+      try {
+        // Try Firebase first
+        const activationsRef = ref(db, `users/${currentUserId}/activatedProducts`);
+        const snapshot = await get(activationsRef);
+        
+        if (snapshot.exists()) {
+          const activations = snapshot.val();
+          Object.keys(activations).forEach(toolId => {
+            userActivatedProducts[toolId] = true;
+          });
+          console.log('🔓 Loaded user activations from Firebase:', Object.keys(userActivatedProducts));
+        }
+        
+        // Try alternative Firebase location
+        const altActivationsRef = ref(db, `userActivations/${currentUserId}`);
+        const altSnapshot = await get(altActivationsRef);
+        
+        if (altSnapshot.exists()) {
+          const altActivations = altSnapshot.val();
+          Object.keys(altActivations).forEach(toolId => {
+            userActivatedProducts[toolId] = true;
+          });
+          console.log('🔓 Loaded user activations from alternative location');
+        }
+        
+      } catch (error) {
+        console.error('Error loading Firebase activations:', error);
+      }
+      
+      // Load from localStorage as fallback
+      try {
+        const localActivations = JSON.parse(localStorage.getItem('localActivations') || '{}');
+        Object.keys(localActivations).forEach(toolId => {
+          userActivatedProducts[toolId] = true;
+        });
+        console.log('🔓 Loaded user activations from localStorage:', Object.keys(localActivations));
+      } catch (error) {
+        console.error('Error loading localStorage activations:', error);
+      }
+    }
+
+    // Market data loading
+    function loadMarketData() {
+      showLoadingAnimation();
+      
+      onValue(ref(db, "tools"), async (snapshot) => {
+        clearLoadingAnimation();
+        
+        if (snapshot.exists()) {
+          hasFirebaseData = true;
+          const data = snapshot.val();
+          allToolsData = [];
+          Object.keys(data).forEach(userId => {
+            if (typeof data[userId] === 'object') {
+              Object.keys(data[userId]).forEach(toolKey => {
+                const tool = data[userId][toolKey];
+                allToolsData.push({
+                  ...tool,
+                  key: `${userId}/${toolKey}`,
+                  sellerId: userId,
+                  toolId: tool.toolId || toolKey,
+                  name: tool.name || "Unnamed Tool",
+                  category: tool.category || "uncategorized",
+                  description: tool.description || "No description available.",
+                  image: tool.image || "https://via.placeholder.com/300x200/1a1a2e/00bcd4?text=No+Image",
+                  videoPreview: tool.videoPreview || null,
+                  uploaderName: tool.uploaderName || "Anonymous",
+                  uploaderAvatar: tool.uploaderAvatar || "https://via.placeholder.com/36/00bcd4/fff?text=U",
+                  uploadedAt: tool.uploadedAt || Date.now(),
+                  tool_usage: tool.tool_usage || "How to use: Open in After Effects and customize as needed.",
+                  downloadLink: tool.downloadLink || "#",
+                  isPaid: tool.isPaid || false,
+                  price: tool.price || "Free"
+                });
+              });
+            }
+          });
+          allToolsData.sort((a, b) => (b.uploadedAt || 0) - (a.uploadedAt || 0));
+          console.log(`📦 Loaded ${allToolsData.length} tools from Firebase`);
+          await renderTools('all', '');
+        } else {
+          hasFirebaseData = false;
+          console.log('📭 No Firebase data found, showing example products');
+          allToolsData = [...exampleProducts];
+          await renderTools('all', '');
+        }
+      }, (error) => {
+        console.error('Error loading Firebase data:', error);
+        hasFirebaseData = false;
+        clearLoadingAnimation();
+        allToolsData = [...exampleProducts];
+        renderTools('all', '');
+      });
+    }
+
+    // Loading animation
+    function showLoadingAnimation() {
+      marketContainer.innerHTML = `
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading products...</div>
+        </div>
+      `;
+    }
+
+    function clearLoadingAnimation() {
+      // Will be cleared by renderTools
+    }
+
+    // Tool rendering - FIXED: When a paid product is activated, the download button should open download page
+    async function renderTools(filterCategory = 'all', searchQuery = '') {
+      let toolsToDisplay = filterCategory === 'all' 
+        ? allToolsData 
+        : allToolsData.filter(tool => tool.category === filterCategory);
+      
+      if (searchQuery) {
+        toolsToDisplay = toolsToDisplay.filter(tool => 
+          tool.name.toLowerCase().includes(searchQuery) ||
+          (tool.description && tool.description.toLowerCase().includes(searchQuery)) ||
+          (tool.uploaderName && tool.uploaderName.toLowerCase().includes(searchQuery)) ||
+          (tool.tool_usage && tool.tool_usage.toLowerCase().includes(searchQuery)) ||
+          (tool.category && tool.category.toLowerCase().includes(searchQuery))
+        );
+      }
+      
+      marketContainer.innerHTML = '';
+      
+      if (toolsToDisplay.length === 0) {
+        marketContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <h3>No products found</h3>
+            <p>${hasFirebaseData ? 'No products match your search criteria.' : 'No products have been uploaded yet.'}</p>
+            ${!hasFirebaseData ? '<p style="margin-top: 10px; font-size: 0.9em;">Example products are shown below.</p>' : ''}
+          </div>
+        `;
+        
+        if (!hasFirebaseData && filterCategory === 'all' && !searchQuery) {
+          for (const tool of exampleProducts) {
+            await createToolCard(tool);
+          }
+        }
+        return;
+      }
+      
+      for (const tool of toolsToDisplay) {
+        await createToolCard(tool);
+      }
+    }
+
+    async function createToolCard(tool) {
+      const isPurchased = await hasUserPurchased(currentUserId, tool.toolId);
+      const isActivated = userActivatedProducts[tool.toolId] || false;
+      const hasVideoPreview = tool.videoPreview && tool.videoPreview !== '#';
+      
+      const card = document.createElement('div');
+      card.className = `product-card ${tool.isPaid ? 'paid' : ''}`;
+      
+      const shareLink = `${window.location.origin}${window.location.pathname}#product-${tool.toolId}`;
+      
+      // FIXED: When a paid product is activated, the download button opens the download page
+      // FIXED: When a free product is purchased, it opens the download link directly
+      card.innerHTML = `
+        <div class="product-img-wrapper">
+          <img src="${tool.image}" alt="${tool.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x200/1a1a2e/00bcd4?text=No+Image'">
+          ${hasVideoPreview ? `
+            <button class="video-preview-btn" onclick="showVideoPreview('${tool.videoPreview}', '${tool.name}')">
+              <i class="fas fa-play"></i> Video Preview
+            </button>
+          ` : ''}
+        </div>
+        <div class="product-info">
+          <div class="product-header">
+            <div class="product-title">
+              <h3>${tool.name}</h3>
+              <small style="color: var(--color-text-muted); font-size: 0.8em;">${tool.category.charAt(0).toUpperCase() + tool.category.slice(1)}</small>
+            </div>
+            <div class="price ${tool.isPaid ? 'paid' : ''}">
+              ${tool.isPaid ? (tool.price || '$49.99') : 'Free'}
+            </div>
+          </div>
+          
+          <div class="product-id">
+            <div class="product-id-left">
+              <span>ID: ${tool.toolId}</span>
+              <span class="copy-icon" onclick="copyToClipboard('${tool.toolId}', 'Product ID copied!')">
+                <i class="fas fa-copy"></i> Copy ID
+              </span>
+            </div>
+            <span class="share-icon" onclick="shareProduct('${tool.toolId}', '${tool.name}', '${shareLink}')">
+              <i class="fas fa-share-alt"></i> Share
+            </span>
+          </div>
+          
+          <div class="user-info">
+            <div class="user-details">
+              <img src="${tool.uploaderAvatar || 'https://via.placeholder.com/36/00bcd4/fff?text=U'}" class="user-avatar-small" onerror="this.src='https://via.placeholder.com/36/00bcd4/fff?text=U'">
+              <span class="username">${tool.uploaderName || 'Anonymous'}</span>
+            </div>
+            <span class="time">${getTimeAgo(tool.uploadedAt || Date.now())}</span>
+          </div>
+          
+          <div class="buttons">
+            ${tool.isPaid ? 
+              (isActivated ? 
+                `<button class="download-btn" onclick="showActivatedProductDownload('${tool.toolId}', '${tool.name}')"><i class="fas fa-download"></i> Download</button>` :
+                `<button class="activate-btn" onclick="showActivationDialog('${tool.toolId}', '${tool.name}')"><i class="fas fa-lock-open"></i> Unlock</button>`
+              ) :
+              (isPurchased ? 
+                `<button class="download-btn" onclick="handleDownload('${tool.downloadLink}', '${tool.key || tool.toolId}')"><i class="fas fa-download"></i> Download</button>` : 
+                `<button class="purchase-btn ${tool.isPaid ? 'paid' : ''}" onclick="handlePurchase('${tool.toolId}', '${tool.sellerId || 'example'}', '${tool.name}', ${tool.isPaid})"><i class="fas fa-shopping-cart"></i> Get Now</button>`
+              )
+            }
+            <button class="info-btn" onclick="showToolInfo('${tool.toolId}')"><i class="fas fa-info-circle"></i> Info</button>
+          </div>
+        </div>
+      `;
+      
+      marketContainer.appendChild(card);
+    }
+
+    // Utility functions
+    function getTimeAgo(timestamp) {
+      const now = Date.now();
+      const diff = now - timestamp;
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      
+      if (days > 0) return `${days}d ago`;
+      if (hours > 0) return `${hours}h ago`;
+      if (minutes > 0) return `${minutes}m ago`;
+      return 'Just now';
+    }
+
+    async function hasUserPurchased(userId, toolId) {
+      if (!userId) return false;
+      try {
+        const purchaseRef = ref(db, `users/${userId}/purchasedTools/${toolId}`);
+        const snapshot = await get(purchaseRef);
+        return snapshot.exists();
+      } catch (error) {
+        console.error('Error checking purchase:', error);
+        return false;
+      }
+    }
+
+    // Global functions for button handlers
+    window.copyToClipboard = (text, message = 'Copied to clipboard!') => {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(message, 'success');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        showToast('Failed to copy', 'error');
+      });
+    };
+
+    window.shareProduct = (toolId, productName, shareLink) => {
+      if (navigator.share) {
+        navigator.share({
+          title: `Check out ${productName} on Motion-Flow`,
+          text: `I found this amazing product on Motion-Flow: ${productName}`,
+          url: shareLink,
+        }).then(() => {
+          showToast('Shared successfully!', 'success');
+        }).catch(err => {
+          console.error('Error sharing:', err);
+          copyToClipboard(shareLink, 'Product link copied!');
+        });
+      } else {
+        copyToClipboard(shareLink, 'Product link copied! Share this link with others.');
+      }
+    };
+
+    window.showVideoPreview = (videoUrl, productName) => {
+      if (!videoUrl || videoUrl === '#') {
+        showToast('No video preview available for this product', 'error');
+        return;
+      }
+      
+      videoSource.src = videoUrl;
+      previewVideo.load();
+      videoDialog.classList.add('active');
+      
+      previewVideo.onloadeddata = () => {
+        previewVideo.play().catch(e => {
+          console.log('Autoplay prevented:', e);
+          showToast('Click the play button to start video', 'error');
+        });
+      };
+    };
+
+    window.showActivationDialog = (toolId, productName) => {
+      currentActivationTool = toolId;
+      activationProductName.textContent = productName;
+      activationDialog.classList.add('active');
+      activationCode.focus();
+      
+      // Load fresh codes when dialog opens
+      loadActivationCodes().then(() => {
+        console.log('🔑 Codes loaded for activation dialog');
+      });
+    };
+
+    // NEW FUNCTION: Show download page for activated product
+    window.showActivatedProductDownload = async (toolId, productName) => {
+      // Find the activation code from user's activations
+      let activationCode = '';
+      
+      try {
+        // Try to get the activation code from Firebase
+        if (currentUserId) {
+          const activationRef = ref(db, `users/${currentUserId}/activatedProducts/${toolId}`);
+          const snapshot = await get(activationRef);
+          
+          if (snapshot.exists()) {
+            const activationData = snapshot.val();
+            activationCode = activationData.activationCode || '';
+          }
+        }
+      } catch (error) {
+        console.error('Error getting activation code:', error);
+      }
+      
+      // If not found in Firebase, check localStorage
+      if (!activationCode) {
+        try {
+          const localActivations = JSON.parse(localStorage.getItem('localActivations') || '{}');
+          if (localActivations[toolId]) {
+            activationCode = localActivations[toolId].code || '';
+          }
+        } catch (error) {
+          console.error('Error getting activation code from localStorage:', error);
+        }
+      }
+      
+      // Show the download page with the product info
+      showDownloadPage(toolId, productName, activationCode);
+    };
+
+    window.handleDownload = async (downloadLink, toolKey) => {
+      if (downloadLink && downloadLink !== '#') {
+        window.open(downloadLink, '_blank');
+        if (hasFirebaseData) {
+          try {
+            const downloadCountRef = ref(db, `tools/${toolKey}/downloadCount`);
+            const currentCount = await get(downloadCountRef);
+            const newCount = (currentCount.val() || 0) + 1;
+            await set(downloadCountRef, newCount);
+          } catch (error) {
+            console.error('Error updating count:', error);
+          }
+        }
+      } else {
+        showToast('Download link not available', 'error');
+      }
+    };
+
+    window.handlePurchase = async (toolId, sellerId, toolName, isPaid = false) => {
+      if (!currentUserId) {
+        showToast('Please login to get tools!', 'error');
+        return;
+      }
+      
+      if (hasFirebaseData && currentUserId === sellerId) {
+        showToast('You cannot get your own tool!', 'error');
+        return;
+      }
+      
+      if (isPaid) {
+        showActivationDialog(toolId, toolName);
+        return;
+      }
+      
+      if (!hasFirebaseData) {
+        showToast('This is an example product. Real products can be purchased through Telegram.', 'error');
+        return;
+      }
+      
+      const confirmPurchase = confirm(`Get "${toolName}" for free?`);
+      if (!confirmPurchase) return;
+      
+      try {
+        window.open('https://t.me/eclipsia_techs', '_blank');
+        
+        const purchaseRef = ref(db, `users/${currentUserId}/purchasedTools/${toolId}`);
+        await set(purchaseRef, {
+          purchasedAt: Date.now(),
+          toolName: toolName
+        });
+        
+        showToast(`Success! Contact admin on Telegram to get "${toolName}"`, 'success');
+        renderTools(currentFilterCategory, currentSearchQuery);
+      } catch (error) {
+        showToast('Something went wrong: ' + error.message, 'error');
+      }
+    };
+
+    window.showToolInfo = (toolId) => {
+      const tool = allToolsData.find(t => t.toolId === toolId);
+      if (tool) {
+        infoContent.innerHTML = `
+          <h2 style="margin-bottom: 15px; color: var(--color-accent);">${tool.name}</h2>
+          <div style="margin-bottom: 20px; padding: 10px; background: rgba(0, 188, 212, 0.1); border-radius: 8px;">
+            <strong>Category:</strong> ${tool.category.charAt(0).toUpperCase() + tool.category.slice(1)}<br>
+            <strong>Price:</strong> ${tool.isPaid ? (tool.price || '$49.99') : 'Free'}<br>
+            <strong>Uploaded by:</strong> ${tool.uploaderName || 'Anonymous'}<br>
+            <strong>Uploaded:</strong> ${new Date(tool.uploadedAt || Date.now()).toLocaleDateString()}
+            ${tool.videoPreview && tool.videoPreview !== '#' ? '<br><strong>Video Preview:</strong> Available' : ''}
+          </div>
+          <p><strong>Description:</strong> ${tool.description || 'No description available.'}</p>
+          ${tool.tool_usage ? `<p style="margin-top: 15px;"><strong>How to use:</strong> ${tool.tool_usage}</p>` : ''}
+          ${tool.isPaid ? 
+            `<div style="margin-top: 15px; padding: 15px; background: rgba(249, 115, 22, 0.1); border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.3);">
+              <p><strong><i class="fas fa-crown"></i> Premium Product</strong></p>
+              <p>This is a paid product. Message admin on Telegram to purchase and get activation code.</p>
+            </div>` : 
+            ''
+          }
+          ${!hasFirebaseData ? '<p style="margin-top: 15px; color: var(--color-accent-alt);"><i class="fas fa-info-circle"></i> This is an example product for demonstration purposes.</p>' : ''}
+          <button class="purchase-btn" onclick="infoDialog.classList.remove('active')" style="margin-top: 20px;">Close</button>
+        `;
+        infoDialog.classList.add('active');
+      }
+    };
+
+    // Handle escape key to close dialogs
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (sidebarOpen) {
+          toggleSidebar();
+        }
+        if (logoutDialog.classList.contains('active')) {
+          logoutDialog.classList.remove('active');
+        }
+        if (infoDialog.classList.contains('active')) {
+          infoDialog.classList.remove('active');
+        }
+        if (videoDialog.classList.contains('active')) {
+          closeVideoDialog();
+        }
+        if (activationDialog.classList.contains('active')) {
+          closeActivationDialog();
+        }
+        if (downloadPageDialog.classList.contains('active')) {
+          closeDownloadPage();
+        }
+        if (categoryDropdown.classList.contains('active')) {
+          categoryTrigger.classList.remove('active');
+          categoryDropdown.classList.remove('active');
+        }
+      }
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🏠 Homepage loaded');
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#product-')) {
+        const toolId = hash.replace('#product-', '');
+        console.log('📦 Loading specific product from URL:', toolId);
+        setTimeout(() => {
+          searchInput.value = toolId;
+          performSearch();
+        }, 1000);
+      }
+      showLoadingAnimation();
+    });
+  </script>
+</body>
+</html>

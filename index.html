@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion-Flow | Motion Graphics Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            /* Color Palette */
+            --color-dark: #0a0a12;
+            --color-bg: #0f0f1a;
+            --color-bg-light: #1a1a2e;
+            /* UPDATED: Cyan/Dark Blue for Primary Accent */
+            --color-primary: #00bcd4; /* A brighter cyan/teal */
+            --color-secondary: #7c3aed;
+            /* UPDATED: Strong Cyan/Teal */
+            --color-accent: #00bcd4; /* Brighter, matches the reference glow */
+            --color-accent-alt: #f97316; /* Orange for alternate accents/glows */
+            --color-text: #e2e8f0;
+            --color-text-muted: #94a3b8;
+            --color-text-dark: #475569;
+            
+            /* Glow Colors for Cards (Matching the Arch reference) */
+            --glow-blue: rgba(0, 188, 212, 0.7); /* Cyan/Teal */
+            --glow-purple: rgba(124, 58, 237, 0.7); /* Purple */
+            --glow-green: rgba(16, 185, 129, 0.7); /* Green (kept for the third card) */
+            --glow-orange: rgba(249, 115, 22, 0.7); /* Strong Orange */
+            
+            /* Typography */
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+        
+        /* ===== CSS RESET & BASE STYLES ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                /* UPDATED: Background glow emphasizing new accent colors */
+                radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            margin-bottom: var(--space-md);
+            /* UPDATED: Title gradient uses Cyan and Purple */
+            background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            /* UPDATED: Text glow using Cyan and Purple/Orange */
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.4), 0 0 20px rgba(124, 58, 237, 0.2);
+        }
+        
+        h2 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        p {
+            font-size: 1.125rem;
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-muted);
+        }
+        
+        .text-gradient {
+            /* UPDATED: Gradient uses Cyan and Orange */
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* ===== LAYOUT & CONTAINERS ===== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+        
+        section {
+            padding: var(--space-xl) 0;
+            position: relative;
+        }
+        
+        /* Video Container Styles (16:9 Aspect Ratio) */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio (9/16 * 100) */
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform var(--transition-normal);
+            margin: 0 auto; /* Ensures it's centered */
+        }
+        
+        /* New styles for video inside the hero section */
+        .video-wrapper.hero-video {
+            max-width: 800px;
+            margin-top: var(--space-lg); /* Slightly reduced margin */
+            /* UPDATED: Glow uses primary accent color. This will fade in/out with the opacity transition. */
+            box-shadow: 
+                0 0 20px rgba(0, 188, 212, 0.4), 
+                0 0 5px rgba(124, 58, 237, 0.2); 
+            transform: scale(1);
+            /* CONNECT TO CAPTION: Remove bottom border radius */
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .video-wrapper.hero-video:hover {
+            transform: scale(1.01); 
+        }
+        
+        /* Styles for media elements inside the wrapper */
+        .video-wrapper .video-preview-media { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: cover;
+        }
+
+        /* Video Caption/Border Styles */
+        .video-caption {
+            max-width: 800px; /* Matches video wrapper max-width */
+            margin: 0 auto;
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            
+            /* CONNECT TO VIDEO: Use color-bg-light to blend with the video wrapper */
+            background-color: var(--color-bg-light); 
+
+            /* CONNECT TO VIDEO: Remove vertical padding and use smaller padding */
+            padding: 0.75rem var(--space-sm); 
+
+            /* CONNECT TO VIDEO: Use top border instead of bottom border */
+            border-top: 2px solid var(--color-accent);
+            border-bottom: none; 
+
+            /* CONNECT TO VIDEO: Set radius for bottom corners only */
+            border-radius: 0 0 16px 16px; 
+            
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.2);
+            margin-bottom: var(--space-lg); /* Space below the caption before the next element */
+            transition: all var(--transition-normal);
+        }
+
+        .video-caption:hover {
+            color: var(--color-accent);
+            box-shadow: 0 8px 25px rgba(0, 188, 212, 0.4);
+        }
+        
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                /* UPDATED: Hero background glow uses Cyan and Purple */
+                radial-gradient(circle at 30% 30%, rgba(0, 188, 212, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+            animation: pulse 20s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+        
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(180deg); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tagline {
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            margin-bottom: var(--space-lg);
+            color: var(--color-text-muted);
+        }
+        
+        /* ===== FEATURES SECTION ===== */
+        .features {
+            background-color: var(--color-dark);
+            position: relative;
+        }
+        
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                /* UPDATED: Divider uses Cyan and Purple/Orange */
+                var(--color-accent), 
+                var(--color-accent-alt), 
+                transparent
+            );
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto var(--space-xl);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+        
+        /* ===== GLOW CARDS ===== */
+        .feature-card {
+            background-color: var(--color-bg-light);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: var(--space-lg);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            --card-glow-color: var(--glow-blue);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                800px circle at var(--mouse-x) var(--mouse-y),
+                rgba(255, 255, 255, 0.06),
+                transparent 40%
+            );
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.15); /* Slightly brighter border on hover */
+            /* Enhanced Glow effect for cards */
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.15),
+                0 0 25px var(--card-glow-color), /* Increased blur radius */
+                0 10px 40px rgba(0, 0, 0, 0.8); /* Stronger dark shadow for lift */
+        }
+        
+        .feature-card:nth-child(1) {
+            --card-glow-color: var(--glow-blue); /* Cyan/Teal */
+        }
+        
+        .feature-card:nth-child(2) {
+            --card-glow-color: var(--glow-orange); /* Orange */
+        }
+        
+        .feature-card:nth-child(3) {
+            --card-glow-color: var(--glow-purple); /* Purple */
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-md);
+            display: inline-block;
+            /* UPDATED: Icon gradient uses Cyan and Orange */
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* ===== CTA SECTION ===== */
+        .cta {
+            text-align: center;
+            padding: var(--space-xl) 0;
+            position: relative;
+        }
+        
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: transparent;
+            color: var(--color-accent);
+            border: 2px solid var(--color-accent);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            /* Added base button shadow for depth */
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.1);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(0, 188, 212, 0.2), 
+                transparent
+            );
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            background-color: rgba(0, 188, 212, 0.1);
+            transform: translateY(-2px);
+            /* Subtle lift shadow */
+            box-shadow: 0 10px 20px rgba(0, 188, 212, 0.2);
+        }
+        
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: var(--color-dark);
+            border-color: var(--color-accent);
+            /* Reset base shadow for primary to look solid */
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4); 
+        }
+        
+        .btn-primary:hover {
+            /* Stronger glow for primary button */
+            background-color: var(--color-accent); 
+            transform: translateY(-3px);
+            box-shadow: 
+                0 0 5px 2px var(--color-accent), /* Inner glow border */
+                /* MODIFIED: Outer shadow opacity reduced to 10% */
+                0 15px 40px rgba(0, 188, 212, 0.1); 
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: var(--space-lg);
+        }
+        
+        /* ===== CLEAN FOOTER ===== */
+        .footer {
+            background-color: var(--color-dark);
+            padding: var(--space-md) 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-link {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+            font-size: 0.9rem;
+        }
+        
+        .footer-link:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            text-align: center;
+            color: var(--color-text-dark);
+            font-size: 0.875rem;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .video-wrapper.hero-video { 
+                max-width: 90%;
+            }
+            .video-caption {
+                max-width: 90%;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: clamp(2rem, 6vw, 3rem);
+            }
+            
+            h2 {
+                font-size: clamp(1.75rem, 5vw, 2.5rem);
+            }
+            
+            .footer-links {
+                gap: var(--space-md);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 var(--space-sm);
+            }
+            
+            section {
+                padding: var(--space-lg) 0;
+            }
+            
+            .feature-card {
+                padding: var(--space-md);
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>MOTION <span class="text-gradient">FLOW</span></h1>
+                <p class="tagline">
+                    Where motion meets creativity. Join the elite community of 
+                    <span class="text-gradient">After Effects masters</span> and 
+                    <span class="text-gradient">visionary creators</span> shaping 
+                    the future of visual storytelling.
+                </p>
+                <div class="btn-group">
+                    <a href="sign-up.html" class="btn btn-primary">Join Community</a>
+                    <a href="#features" class="btn" id="learnMoreBtn">Learn More</a>
+                </div>
+
+                <!-- Video container maintaining 16:9 ratio and fixed size -->
+                <div class="video-wrapper hero-video">
+                    <video class="video-preview-media" controls autoplay loop muted playsinline>
+                        <!-- Updated source to use the uploaded video -->
+                        <source src="lib/previewvid.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <!-- Border/Caption below the video -->
+                <div class="video-caption">MOTION FLOW PREVIEW</div>
+            </div>
+        </div>
+    </section>
+
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Forge Your <span class="text-gradient">Flow</span>. Meet the <span class="text-gradient">Masters</span>.</h2>
+            <p class="section-subtitle">
+                Access exclusive tools, connect with industry leaders, and elevate your motion graphics skills 
+                to professional levels.
+            </p>
+            
+            <div class="features-grid" id="featuresGrid">
+                <!-- Card 1: Blue/Cyan Glow (Now a stronger Cyan) -->
+                <div class="feature-card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Talk to the Titans</h3>
+                    <p>
+                        Connect directly with legendary After Effects editors. Get personalized feedback, 
+                        exclusive tutorials, and industry insights from the masters who shape visual trends.
+                    </p>
+                </div>
+                
+                <!-- Card 2: Orange Glow (Matching Arch Reference) -->
+                <div class="feature-card">
+                    <div class="card-icon">🎨</div>
+                    <h3>Master Motion Design</h3>
+                    <p>
+                        Access premium resources, custom effects, and project files shared exclusively within 
+                        the Motion-Flow community. Transform from amateur to pro with our curated content.
+                    </p>
+                </div>
+                
+                <!-- Card 3: Purple Glow (Matching Arch Reference) -->
+                <div class="feature-card">
+                    <div class="card-icon">🌟</div>
+                    <h3>Showcase & Get Noticed</h3>
+                    <p>
+                        Share your best work on our featured feeds. Build an impressive portfolio and attract 
+                        clients, collaborators, and opportunities from across the globe.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your <span class="text-gradient">Edits</span>?</h2>
+                <p>
+                    Your journey to becoming a motion graphics master begins here. 
+                    Join thousands of creators who've elevated their skills with Motion-Flow.
+                </p>
+                <a href="sign-up.html" class="btn btn-primary">Start Your Journey Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clean Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="privacy.html" class="footer-link">Privacy Policy</a>
+                    <a href="terms.html" class="footer-link">Terms of Service</a>
+                </div>
+                <p class="copyright">
+                    © 2024 Motion-Flow. All rights reserved. Crafted for motion graphics creators.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== BUTTON ACTIONS =====
+        const learnMoreBtn = document.getElementById('learnMoreBtn');
+
+        if (learnMoreBtn) {
+            learnMoreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('features').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        }
+
+
+        // Fix: Declaring featureCards only once here for global usage.
+        const featureCards = document.querySelectorAll('.feature-card');
+
+        // ===== GLOW CARD MOUSE EFFECT =====
+        featureCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // ===== SMOOTH SCROLL (Unchanged) =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // Offset for potential header/navbar
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ===== SCROLL ANIMATIONS (MODIFIED FOR PERSISTENT FADE-IN/FADE-OUT) =====
+        const observerOptions = {
+            // A threshold of 0.1 means the animation triggers once 10% of the element is visible
+            threshold: 0.1, 
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // FADE IN: Apply final visible state when entering the viewport
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                } else {
+                    // FADE OUT: Apply initial hidden state when leaving the viewport
+                    // This allows the animation to be re-triggered when scrolling back up.
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+                }
+            });
+        }, observerOptions);
+
+        // Function to set up initial state and observe elements
+        const setupAnimation = (elements) => {
+            elements.forEach(el => {
+                // Initial hidden state applied
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                // Set the transition property, which includes the opacity change for the fade-in effect (and the shadow/glow on the video)
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease'; 
+                observer.observe(el);
+            });
+        };
+
+        // Elements to observe for scroll animation
+        const elementsToAnimate = [
+            ...featureCards, // All feature cards
+            document.querySelector('.video-wrapper.hero-video'), // Video (which contains the border/glow)
+            document.querySelector('.video-caption'), // Caption/Bottom border
+            document.querySelector('.section-subtitle'), // Subtitle text
+            document.querySelector('.features h2') // Features heading
+            
+            // Note: The hero text is often visible initially, but this ensures it animates correctly if scrolling is needed.
+        ];
+
+        setupAnimation(elementsToAnimate.filter(el => el != null));
+
+        // ===== INITIALIZE =====
+        console.log('Motion-Flow initialized with continuous scroll fade-in effect.');
+    </script>
+</body>
+</html>

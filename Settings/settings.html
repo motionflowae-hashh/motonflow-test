@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Motion-Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(#0a0a2a, #05051a);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    .background-grid {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.05;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #00e5ff44;
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #00e5ff;
+      font-size: 1.8em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+      z-index: 1003;
+    }
+
+    .menu-btn:hover {
+      color: #6a00ff;
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { color: #00e5ff; }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      box-shadow: 2px 0 20px rgba(0, 229, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      padding: 80px 25px 30px;
+      background: rgba(15, 17, 30, 0.95);
+      border-bottom: 1px solid #00e5ff44;
+      text-align: center;
+    }
+
+    .sidebar-nav {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid #00e5ff22;
+      padding: 15px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      width: 100%;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0, 229, 255, 0.1);
+      border-color: #00e5ff44;
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, #00e5ff15, #6a00ff15);
+      border-color: #00e5ff66;
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      color: #00e5ff;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 20px 120px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Settings Header */
+    .settings-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .settings-header h1 {
+      font-size: 2.2em;
+      color: #00e5ff;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+
+    .settings-header p {
+      color: #9ad3ff;
+      font-size: 1em;
+      opacity: 0.8;
+    }
+
+    /* Settings Section */
+    .settings-section {
+      background: rgba(15, 17, 30, 0.95);
+      border: 1px solid #00e5ff44;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 229, 255, 0.1);
+      backdrop-filter: blur(10px);
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #00e5ff;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title svg {
+      width: 28px;
+      height: 28px;
+      color: #00e5ff;
+    }
+
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    .form-label {
+      display: block;
+      color: #00e5ff;
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(10, 12, 25, 0.8);
+      border: 2px solid #00e5ff44;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 1em;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      background: rgba(10, 12, 25, 0.95);
+      border-color: #00e5ff;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* Custom Dropdown Styles */
+    .custom-select {
+      position: relative;
+      width: 100%;
+    }
+
+    .select-trigger {
+      width: 100%;
+      padding: 16px 18px;
+      background: rgba(10, 12, 25, 0.8);
+      border: 2px solid #00e5ff44;
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1.05em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .select-trigger:hover {
+      background: rgba(10, 12, 25, 0.9);
+      border-color: #00e5ff66;
+    }
+
+    .select-trigger.active {
+      border-color: #00e5ff;
+      background: rgba(10, 12, 25, 0.95);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
+    .select-trigger .placeholder {
+      color: #9ad3ff;
+      opacity: 0.7;
+    }
+
+    .select-trigger .selected-value {
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .select-arrow {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #00e5ff;
+      transition: transform 0.3s ease;
+    }
+
+    .select-trigger.active .select-arrow {
+      transform: rotate(180deg);
+    }
+
+    .select-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: rgba(15, 17, 30, 0.98);
+      border: 2px solid #00e5ff44;
+      border-radius: 12px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 229, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .select-dropdown.active {
+      max-height: 400px;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .select-dropdown::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .select-dropdown::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+    }
+
+    .select-dropdown::-webkit-scrollbar-thumb {
+      background: rgba(0, 229, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    .select-dropdown::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 229, 255, 0.5);
+    }
+
+    .select-option {
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .select-option:last-child {
+      border-bottom: none;
+    }
+
+    .select-option:hover {
+      background: rgba(0, 229, 255, 0.1);
+    }
+
+    .select-option.selected {
+      background: rgba(0, 229, 255, 0.15);
+      border-left: 3px solid #00e5ff;
+    }
+
+    .role-input-group {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .role-input-wrapper {
+      flex: 1;
+    }
+
+    .add-role-btn {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #00e5ff, #6a00ff);
+      border: none;
+      border-radius: 10px;
+      color: #0a0a2a;
+      font-weight: 700;
+      font-size: 0.95em;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.2);
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .add-role-btn:hover {
+      background: linear-gradient(135deg, #6a00ff, #00e5ff);
+      box-shadow: 0 6px 24px rgba(0, 229, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .add-role-btn:active {
+      transform: translateY(0);
+    }
+
+    .roles-list {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .role-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid #00e5ff44;
+      border-radius: 20px;
+      color: #00e5ff;
+      font-size: 0.85em;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      animation: slideIn 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .role-tag:hover {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: #00e5ff66;
+    }
+
+    .remove-role-btn {
+      background: none;
+      border: none;
+      color: #9ad3ff;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s ease;
+    }
+
+    .remove-role-btn:hover {
+      color: #ff4444;
+    }
+
+    .remove-role-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #00e5ff, #6a00ff);
+      border: none;
+      border-radius: 12px;
+      color: #0a0a2a;
+      font-weight: 700;
+      font-size: 1em;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.2);
+      margin-top: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .save-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #6a00ff, #00e5ff);
+      box-shadow: 0 6px 24px rgba(0, 229, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .save-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .info-box {
+      background: rgba(0, 229, 255, 0.05);
+      border-left: 3px solid #00e5ff44;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      color: #9ad3ff;
+      font-size: 0.85em;
+      line-height: 1.6;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #00e5ff, #6a00ff);
+      color: #0a0a2a;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0, 229, 255, 0.3);
+      animation: slideInRight 0.4s ease, slideOutRight 0.4s ease 2.6s forwards;
+      z-index: 1000;
+      display: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .error-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff4444, #cc0000);
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 8px 32px rgba(255, 68, 68, 0.3);
+      animation: slideInRight 0.4s ease, slideOutRight 0.4s ease 2.6s forwards;
+      z-index: 1000;
+      display: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(0, 229, 255, 0.1);
+      border-top-color: #00e5ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+    }
+
+    /* Bottom Navigation */
+    .main-footer-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      padding: 15px 0;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid #00e5ff44;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -4px 20px rgba(0, 229, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .footer-items {
+      background: linear-gradient(135deg, rgba(15, 17, 30, 0.9), rgba(10, 12, 25, 0.9));
+      border: 1.5px solid #00e5ff44;
+      padding: 10px 20px;
+      color: #00e5ff;
+      width: 90%;
+      max-width: 500px;
+      height: 70px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      box-shadow: 0 4px 24px rgba(0, 229, 255, 0.15),
+                  0 0 20px rgba(0, 229, 255, 0.1);
+      gap: 8px;
+    }
+
+    .feed-div {
+      text-align: center;
+      padding: 10px 12px;
+      min-width: 70px;
+      border: 1px solid #00e5ff22;
+      border-radius: 16px;
+      background: rgba(10, 12, 20, 0.6);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+
+    .feed-div:hover {
+      background: rgba(0, 229, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
+      transform: translateY(-3px);
+      border-color: #00e5ff66;
+    }
+
+    .feed-div.active {
+      background: rgba(0, 229, 255, 0.2);
+      border-color: #00e5ff66;
+      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4);
+    }
+
+    .feed-img svg {
+      width: 22px;
+      height: 22px;
+      color: #00e5ff;
+      transition: all 0.3s ease;
+    }
+
+    .feed-div:hover .feed-img svg {
+      color: #6a00ff;
+      transform: scale(1.2);
+    }
+
+    .feed-txt {
+      font-size: 0.75em;
+      font-weight: 600;
+      color: #9ad3ff;
+      letter-spacing: 0.5px;
+    }
+
+    /* Footer */
+    .main-footer {
+      background: rgba(15, 17, 30, 0.95);
+      border-top: 1px solid #00e5ff44;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      margin-top: 40px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-link {
+      color: #9ad3ff;
+      text-decoration: none;
+      font-size: 0.9em;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: #00e5ff;
+    }
+
+    .credits {
+      color: #9ad3ff;
+      font-size: 0.9em;
+    }
+
+    .credits a {
+      color: #00e5ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .credits a:hover {
+      text-decoration: underline;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 70px 15px 110px;
+      }
+
+      .settings-header h1 {
+        font-size: 1.8em;
+      }
+
+      .settings-section {
+        padding: 20px;
+      }
+
+      .section-title {
+        font-size: 1.3em;
+      }
+
+      .role-input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .add-role-btn {
+        width: 100%;
+      }
+
+      .footer-items {
+        width: 95%;
+        height: 65px;
+        padding: 8px 15px;
+      }
+
+      .feed-div {
+        padding: 8px 10px;
+        min-width: 65px;
+      }
+
+      .feed-img svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .feed-txt {
+        font-size: 0.7em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .roles-list {
+        gap: 8px;
+      }
+
+      .role-tag {
+        font-size: 0.8em;
+        padding: 6px 12px;
+      }
+
+      .sidebar {
+        width: 280px;
+      }
+
+      .sidebar-header {
+        padding: 70px 20px 25px;
+      }
+
+      .sidebar-nav {
+        padding: 20px;
+      }
+
+      .nav-btn {
+        padding: 12px 15px;
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="menu-btn" id="openSidebar">☰</button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="balance-display" style="display: none;">
+      <!-- Removed balance display from header -->
+    </div>
+  </div>
+  
+  <div class="background-grid"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-size: 1.8em;">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <a href="/homepage.html" class="nav-btn" id="marketBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        Home
+      </a>
+
+      <a href="/updates.html" class="nav-btn" id="updatesBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Updates
+      </a>
+
+      <a href="/Users/users.html" class="nav-btn" id="usersBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Users
+      </a>
+
+      <a href="/Chats/chats.html" class="nav-btn" id="chatBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Messages
+        <span class="notification-badge" id="chatNotificationBadge" style="display: none;">0</span>
+      </a>
+
+      <!-- Admin Only Section -->
+      <div id="adminSection" style="display: none;">
+        <a href="/Host/host.html" class="nav-btn" id="uploadBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload Project
+        </a>
+      </div>
+
+      <a href="/Settings/settings.html" class="nav-btn active" id="settingsBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Settings
+      </a>
+
+      <button class="nav-btn" id="logOutBtn" style="margin-top: auto; background: rgba(229, 57, 53, 0.1); border-color: #e5393544; color: #e53935;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" fill="#e53935" opacity="0.15"/>
+          <polyline points="16 17 21 12 16 7" fill="none" stroke="#e53935"/>
+          <line x1="21" y1="12" x2="9" y2="12" stroke="#e53935"/>
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="#e53935"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <!-- Settings Header -->
+    <div class="settings-header">
+      <h1>Motion-Flow Settings</h1>
+      <p>Customize your profile and preferences</p>
+    </div>
+    
+    <!-- Settings Section -->
+    <div class="settings-section">
+      <h2 class="section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile Information
+      </h2>
+
+      <form id="settingsForm">
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+          <div class="info-box">
+            Your username is how other users will identify you on the platform.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bio">Bio</label>
+          <textarea id="bio" class="form-textarea" placeholder="Tell us about yourself..." maxlength="500"></textarea>
+          <div class="info-box">
+            A brief description about yourself (max 500 characters).
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Current Role</label>
+          <div class="custom-select">
+            <div class="select-trigger" id="selectTrigger">
+              <span class="placeholder">Select a role...</span>
+              <div class="select-arrow"></div>
+            </div>
+            <div class="select-dropdown" id="selectDropdown">
+              <div class="select-option" data-value="Developer">Developer</div>
+              <div class="select-option" data-value="Designer">Designer</div>
+              <div class="select-option" data-value="Manager">Manager</div>
+              <div class="select-option" data-value="Student">Student</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newRole">Add Custom Role</label>
+          <div class="role-input-group">
+            <div class="role-input-wrapper">
+              <input type="text" id="newRole" class="form-input" placeholder="Enter custom role">
+            </div>
+            <button type="button" class="add-role-btn" id="addRoleBtn">Add Role</button>
+          </div>
+
+          <div class="roles-list" id="rolesList"></div>
+
+          <div class="info-box">
+            Add custom roles to personalize your profile. You can remove them anytime.
+          </div>
+        </div>
+
+        <button type="submit" class="save-btn" id="saveBtn">Save Changes</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <footer class="main-footer-nav">
+    <div class="footer-items">
+      <a href="/homepage.html" class="feed-div" id="homeBtnBottom">
+        <div class="feed-img">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="feed-txt">Home</div>
+      </a>
+      
+      <a href="/updates.html" class="feed-div" id="updatesBtnBottom">
+        <div class="feed-img">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <div class="feed-txt">Updates</div>
+      </a>
+      
+      <a href="/Live_Chat/live.html" class="feed-div" id="LivechatBtnBottom">
+        <div class="feed-img">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="feed-txt">Live Chat</div>
+      </a>
+      
+      <a href="/profile/profile.html" class="feed-div" id="profileBtnBottom">
+        <div class="feed-img">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="feed-txt">Profile</div>
+      </a>
+    </div>
+  </footer>
+  
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Support</a>
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Privacy</a>
+      </div>
+      <div class="credits">
+        Made with ❤️ by <a href="https://t.me/eclipsia_techs" target="_blank">eclipsia-techs</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <div class="success-message" id="successMessage">
+    Settings saved successfully!
+  </div>
+
+  <div class="error-message" id="errorMessage">
+    Failed to save settings. Please try again.
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { ref, get, update, getDatabase } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+    import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBsOwXNtfaWwEh3qaM0suXafOg6CYLzDC8",
+      authDomain: "uamtv-c031c.firebaseapp.com",
+      databaseURL: "https://uamtv-c031c-default-rtdb.firebaseio.com",
+      projectId: "uamtv-c031c",
+      storageBucket: "uamtv-c031c.firebasestorage.app",
+      messagingSenderId: "9790917697",
+      appId: "1:9790917697:web:275c8347b7688e0ac38ac0",
+      measurementId: "G-RSXW1XBVQZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase();
+
+    console.log('🔥 Firebase initialized:', app.name);
+
+    // Store custom roles and selected role
+    let customRoles = [];
+    let selectedRole = '';
+    let currentUserId = null;
+    let sidebarOpen = false;
+
+    // UI Elements
+    const selectTrigger = document.getElementById('selectTrigger');
+    const selectDropdown = document.getElementById('selectDropdown');
+    const usernameInput = document.getElementById('username');
+    const bioInput = document.getElementById('bio');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const saveBtn = document.getElementById('saveBtn');
+    const sidebar = document.getElementById('sidebar');
+    const openSidebar = document.getElementById('openSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const logOutBtn = document.getElementById("logOutBtn");
+
+    // Sidebar functionality
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      if (sidebarOpen) {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      } else {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+      }
+    }
+
+    openSidebar.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Close sidebar when clicking on nav items
+    const navButtons = [logOutBtn];
+    navButtons.forEach(btn => {
+      if (btn) {
+        btn.addEventListener('click', () => {
+          toggleSidebar();
+        });
+      }
+    });
+
+    // Show notification
+    function showNotification(type, message) {
+      const notification = type === 'success' ? successMessage : errorMessage;
+      if (message) notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Load user data from Firebase
+    async function loadUserData(userId) {
+      loadingOverlay.classList.add('show');
+      try {
+        const userRef = ref(db, `users/${userId}`);
+        const snapshot = await get(userRef);
+        
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          
+          // Populate form fields
+          usernameInput.value = userData.nickname || '';
+          bioInput.value = userData.bio || '';
+          
+          // Load role
+          if (userData.role) {
+            selectedRole = userData.role;
+            updateSelectedRole(userData.role);
+          }
+          
+          // Load custom roles
+          if (userData.customRoles && Array.isArray(userData.customRoles)) {
+            customRoles = userData.customRoles;
+            customRoles.forEach(role => addRoleToDropdown(role));
+            renderRolesList();
+          }
+          
+          console.log('✅ User data loaded successfully');
+        } else {
+          console.log('⚠️ No user data found');
+        }
+      } catch (error) {
+        console.error('❌ Error loading user data:', error);
+        showNotification('error', 'Failed to load user data');
+      } finally {
+        loadingOverlay.classList.remove('show');
+      }
+    }
+
+    // Save user data to Firebase
+    async function saveUserData() {
+      if (!currentUserId) {
+        showNotification('error', 'User not authenticated');
+        return;
+      }
+
+      const username = usernameInput.value.trim();
+      const bio = bioInput.value.trim();
+
+      if (!username) {
+        showNotification('error', 'Username is required');
+        return;
+      }
+
+      if (!selectedRole) {
+        showNotification('error', 'Please select a role');
+        return;
+      }
+
+      loadingOverlay.classList.add('show');
+      saveBtn.disabled = true;
+
+      try {
+        const userRef = ref(db, `users/${currentUserId}`);
+        
+        const updates = {
+          nickname: username,
+          bio: bio,
+          role: selectedRole,
+          customRoles: customRoles
+        };
+
+        await update(userRef, updates);
+        
+        console.log('✅ Settings saved successfully');
+        showNotification('success', 'Settings saved successfully!');
+      } catch (error) {
+        console.error('❌ Error saving settings:', error);
+        showNotification('error', 'Failed to save settings. Please try again.');
+      } finally {
+        loadingOverlay.classList.remove('show');
+        saveBtn.disabled = false;
+      }
+    }
+
+    // Toggle dropdown
+    selectTrigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectTrigger.classList.toggle('active');
+      selectDropdown.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!selectTrigger.contains(e.target) && !selectDropdown.contains(e.target)) {
+        selectTrigger.classList.remove('active');
+        selectDropdown.classList.remove('active');
+      }
+    });
+
+    // Handle option selection
+    function setupOptionListeners() {
+      const options = selectDropdown.querySelectorAll('.select-option');
+      options.forEach(option => {
+        option.addEventListener('click', function() {
+          options.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          
+          const value = this.getAttribute('data-value');
+          selectedRole = value;
+          
+          selectTrigger.innerHTML = `
+            <span class="selected-value">${value}</span>
+            <div class="select-arrow"></div>
+          `;
+          
+          selectTrigger.classList.remove('active');
+          selectDropdown.classList.remove('active');
+        });
+      });
+    }
+
+    // Update selected role in dropdown
+    function updateSelectedRole(role) {
+      const options = selectDropdown.querySelectorAll('.select-option');
+      options.forEach(opt => {
+        if (opt.getAttribute('data-value') === role) {
+          opt.classList.add('selected');
+          selectTrigger.innerHTML = `
+            <span class="selected-value">${role}</span>
+            <div class="select-arrow"></div>
+          `;
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+    }
+
+    // Add role to dropdown
+    function addRoleToDropdown(roleName) {
+      // Check if role already exists in dropdown
+      const existingOptions = Array.from(selectDropdown.querySelectorAll('.select-option'));
+      if (existingOptions.some(opt => opt.getAttribute('data-value') === roleName)) {
+        return;
+      }
+
+      const option = document.createElement('div');
+      option.className = 'select-option';
+      option.setAttribute('data-value', roleName);
+      option.textContent = roleName;
+      selectDropdown.appendChild(option);
+      setupOptionListeners();
+    }
+
+    // Render roles list
+    function renderRolesList() {
+      const rolesList = document.getElementById('rolesList');
+      rolesList.innerHTML = '';
+
+      customRoles.forEach((role, index) => {
+        const roleTag = document.createElement('div');
+        roleTag.className = 'role-tag';
+        
+        const roleText = document.createElement('span');
+        roleText.textContent = role;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-role-btn';
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        removeBtn.onclick = () => removeRole(index);
+        
+        roleTag.appendChild(roleText);
+        roleTag.appendChild(removeBtn);
+        rolesList.appendChild(roleTag);
+      });
+    }
+
+    // Add new role
+    document.getElementById('addRoleBtn').addEventListener('click', () => {
+      const newRoleInput = document.getElementById('newRole');
+      const newRole = newRoleInput.value.trim();
+
+      if (newRole && !customRoles.includes(newRole)) {
+        customRoles.push(newRole);
+        addRoleToDropdown(newRole);
+        renderRolesList();
+        newRoleInput.value = '';
+      } else if (customRoles.includes(newRole)) {
+        showNotification('error', 'This role already exists!');
+      } else if (!newRole) {
+        showNotification('error', 'Please enter a role name');
+      }
+    });
+
+    // Remove role
+    function removeRole(index) {
+      const removedRole = customRoles[index];
+      customRoles.splice(index, 1);
+      
+      // Remove from dropdown
+      const options = selectDropdown.querySelectorAll('.select-option');
+      options.forEach(option => {
+        if (option.getAttribute('data-value') === removedRole) {
+          option.remove();
+        }
+      });
+      
+      // If removed role was selected, clear selection
+      if (selectedRole === removedRole) {
+        selectedRole = '';
+        selectTrigger.innerHTML = `
+          <span class="placeholder">Select a role...</span>
+          <div class="select-arrow"></div>
+        `;
+      }
+      
+      renderRolesList();
+    }
+
+    // Handle enter key in role input
+    document.getElementById('newRole').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('addRoleBtn').click();
+      }
+    });
+
+    // Save settings form submit
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await saveUserData();
+    });
+
+    // Logout functionality
+    logOutBtn.addEventListener("click", async () => {
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (!confirmLogout) return;
+
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          await update(ref(db, "users/" + user.uid), {
+            status: "offline",
+          });
+        }
+        await signOut(auth);
+        window.location.href = "/index.html";
+      } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Something went wrong while logging out.");
+      }
+    });
+
+    // Handle escape key to close sidebar
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebarOpen) {
+        toggleSidebar();
+      }
+    });
+
+    // Initialize on auth state change
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        console.log('👤 User authenticated:', currentUserId);
+        await loadUserData(currentUserId);
+        setupOptionListeners();
+      } else {
+        console.log('⚠️ No user logged in');
+        showNotification('error', 'Please log in to access settings');
+        // Uncomment to redirect to login
+        // window.location.href = '/login.html';
+      }
+    });
+  </script>
+</body>
+</html>

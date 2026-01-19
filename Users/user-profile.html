@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - Motion-Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-dark: #0a0a12;
+      --color-bg: #0f0f1a;
+      --color-bg-light: #1a1a2e;
+      --color-primary: #00bcd4;
+      --color-accent: #00bcd4;
+      --color-accent-alt: #f97316;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-body);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(0, 188, 212, 0.1);
+      border-top-color: var(--color-accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      color: var(--color-accent);
+      font-family: var(--font-heading);
+      font-size: 1.2em;
+      letter-spacing: 2px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mobile Navbar */
+    .mobile-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(15, 17, 30, 0.98);
+      z-index: 1002;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .navbar-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--color-accent-alt);
+      transform: scale(1.1);
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.4em;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .logo .motion { color: #ffffff; }
+    .logo .flow { 
+      color: var(--color-accent);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(15, 17, 30, 0.98);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      box-shadow: 2px 0 20px rgba(0, 188, 212, 0.2);
+      backdrop-filter: blur(10px);
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      padding: 80px 25px 30px;
+      background: rgba(15, 17, 30, 0.95);
+      border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+      text-align: center;
+    }
+
+    .sidebar-nav {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      padding: 15px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.95em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-color: rgba(0, 188, 212, 0.3);
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(0, 188, 212, 0.1), rgba(249, 115, 22, 0.1));
+      border-color: rgba(0, 188, 212, 0.4);
+    }
+
+    .nav-btn i {
+      color: var(--color-accent);
+      font-size: 1.2em;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 20px 120px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .profile-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .profile-header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 0 10px;
+    }
+
+    .profile-header-section h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2em, 5vw, 3em);
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+      line-height: 1.2;
+    }
+
+    .profile-header-section p {
+      color: var(--color-text-muted);
+      font-size: clamp(1em, 3vw, 1.2em);
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    .profile-main {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .profile-main {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    /* Profile Card Styles */
+    .profile-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+      border-color: rgba(0, 188, 212, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 188, 212, 0.2);
+    }
+
+    .profile-avatar-section {
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 3px solid var(--color-accent);
+      background: linear-gradient(135deg, #0a0a2a, #1a1a3a);
+      margin: 0 auto 25px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 188, 212, 0.3);
+      position: relative;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Name Elements */
+    .nickname {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4em, 4vw, 1.8em);
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .username {
+      color: var(--color-text-muted);
+      font-size: clamp(1em, 3vw, 1.1em);
+      margin-bottom: 20px;
+    }
+
+    .profile-bio {
+      color: var(--color-text-muted);
+      font-size: clamp(0.9em, 2.5vw, 1em);
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    /* Stats Section */
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .profile-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: rgba(0, 188, 212, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(0, 188, 212, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-size: clamp(1.2em, 4vw, 1.6em);
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: clamp(0.8em, 2.5vw, 0.9em);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .social-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .social-link.tiktok {
+      background: #000000;
+    }
+    .social-link.youtube {
+      background: #FF0000;
+    }
+    .social-link.instagram {
+      background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+    }
+
+    /* Info Card */
+    .info-card {
+      background: var(--color-bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 188, 212, 0.1);
+      backdrop-filter: blur(10px);
+      width: 100%;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.2em, 4vw, 1.5em);
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: rgba(0, 188, 212, 0.05);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+      background: rgba(0, 188, 212, 0.1);
+      border-left-color: var(--color-accent-alt);
+      transform: translateX(5px);
+    }
+
+    .info-label {
+      color: var(--color-accent);
+      font-weight: 600;
+      min-width: 120px;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      letter-spacing: 1px;
+    }
+
+    .info-value {
+      color: var(--color-text);
+      font-weight: 500;
+      font-size: 1em;
+      flex: 1;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      z-index: 990;
+      background: rgba(10, 10, 18, 0.7);
+      backdrop-filter: blur(25px) saturate(150%);
+      -webkit-backdrop-filter: blur(25px) saturate(150%);
+      border-top: 1px solid rgba(0, 188, 212, 0.3);
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5), 0 -2px 10px rgba(0, 188, 212, 0.1);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-text-muted);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+      transition: color 0.3s;
+    }
+
+    .nav-item.active {
+      color: var(--color-primary);
+      transform: scale(1.05);
+    }
+
+    .nav-item.active i {
+      color: var(--color-primary);
+      text-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+    }
+
+    .nav-item:hover {
+      color: var(--color-primary);
+    }
+
+    /* Follow/Unfollow Button */
+    .follow-btn {
+      display: inline-block;
+      background: var(--color-accent);
+      color: var(--color-dark);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .follow-btn:hover {
+      background: rgba(0, 188, 212, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+    }
+
+    .follow-btn.unfollow {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .follow-btn.unfollow:hover {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+      border-color: rgba(244, 67, 54, 0.3);
+    }
+
+    /* Message Button */
+    .message-btn {
+      display: inline-block;
+      background: rgba(0, 188, 212, 0.1);
+      color: var(--color-accent);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      width: 100%;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+
+    .message-btn:hover {
+      background: rgba(0, 188, 212, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 188, 212, 0.2);
+    }
+
+    /* Interests Tags */
+    .interests-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .interest-tag {
+      background: rgba(0, 188, 212, 0.1);
+      color: var(--color-accent);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    /* Privacy Badges */
+    .privacy-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .privacy-badge.public {
+      background: rgba(0, 188, 212, 0.2);
+      color: var(--color-accent);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+    }
+
+    .privacy-badge.private {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--color-accent-alt);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    .privacy-badge.friends {
+      background: rgba(124, 58, 237, 0.2);
+      color: #8b5cf6;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 17, 30, 0.95);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      z-index: 2002;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.3s ease;
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* Restricted Content */
+    .restricted-content {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--color-text-muted);
+    }
+
+    .restricted-content i {
+      font-size: 3em;
+      color: var(--color-accent);
+      margin-bottom: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 70px 15px 100px;
+      }
+      
+      .profile-card, .info-card {
+        padding: 20px;
+      }
+      
+      .profile-avatar {
+        width: 140px;
+        height: 140px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 70px 10px 90px;
+      }
+      
+      .profile-main {
+        gap: 15px;
+      }
+      
+      .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .info-label {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading Profile...</div>
+  </div>
+
+  <!-- Mobile Navbar -->
+  <div class="mobile-navbar">
+    <div class="navbar-content">
+      <button class="back-btn" id="backBtn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="logo">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+    </div>
+    <div class="user-info" id="navbarUserInfo"></div>
+  </div>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="font-size: 1.8em;">
+        <span class="motion">MOTION</span><span class="flow">FLOW</span>
+      </div>
+      <div class="sidebar-user-info" id="sidebarUserInfo" style="margin-top: 15px; color: var(--color-text-muted);"></div>
+    </div>
+    <div class="sidebar-nav">
+      <a href="../homepage.html" class="nav-btn">
+        <i class="fas fa-home"></i>
+        Home
+      </a>
+
+      <a href="../Users/users.html" class="nav-btn">
+        <i class="fas fa-users"></i>
+        Users
+      </a>
+
+      <a href="../Chats/chats.html" class="nav-btn">
+        <i class="fas fa-comments"></i>
+        Messages
+      </a>
+
+      <a href="../profile/profile.html" class="nav-btn">
+        <i class="fas fa-user"></i>
+        My Profile
+      </a>
+
+      <a href="../Settings/settings.html" class="nav-btn">
+        <i class="fas fa-cog"></i>
+        Settings
+      </a>
+
+      <button class="nav-btn" id="logOutBtn" style="margin-top: auto; background: rgba(229, 57, 53, 0.1); border-color: rgba(229, 57, 53, 0.3); color: #e53935;">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent" style="display: none;">
+    <div class="profile-container">
+      <div class="profile-header-section">
+        <h1 id="profileTitle">User Profile</h1>
+        <p id="profileSubtitle">Viewing user information</p>
+      </div>
+
+      <div class="profile-main">
+        <!-- Left Column - Profile Card -->
+        <div class="profile-card">
+          <div class="profile-avatar-section">
+            <div class="profile-avatar" id="profile-avatar">
+              <!-- Avatar will be loaded here -->
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--color-accent);">
+                <i class="fas fa-user" style="font-size: 4em;"></i>
+              </div>
+            </div>
+            
+            <div class="nickname" id="nickname">Loading...</div>
+            <div class="username" id="username">@username</div>
+            <div class="profile-bio" id="profile-bio">No bio available.</div>
+            
+            <!-- Social Links -->
+            <div class="social-links" id="social-links">
+              <!-- Social links will be loaded here -->
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="profile-stats">
+              <div class="stat-item" id="followers-stat">
+                <div class="stat-value" id="followers-count">0</div>
+                <div class="stat-label">Followers</div>
+              </div>
+              <div class="stat-item" id="following-stat">
+                <div class="stat-value" id="following-count">0</div>
+                <div class="stat-label">Following</div>
+              </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <button class="follow-btn" id="followBtn">
+              <i class="fas fa-user-plus"></i> Follow
+            </button>
+            
+            <!-- FIXED: Message button will be updated with JavaScript -->
+            <a href="#" class="message-btn" id="messageBtn">
+              <i class="fas fa-envelope"></i> Message
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column - Profile Details -->
+        <div class="profile-info-section">
+          <!-- Public Information Card -->
+          <div class="info-card" id="publicInfoCard">
+            <div class="card-title">
+              <i class="fas fa-globe"></i>
+              Public Information
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Username:</span>
+                <span class="info-value" id="public-username">@username</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Interests:</span>
+                <div class="interests-container" id="public-interests">
+                  <!-- Public interests will be loaded here -->
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Location:</span>
+                <span class="info-value" id="public-location">Not specified</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Joined:</span>
+                <span class="info-value" id="join-date">Loading...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Private Information Card (Only for current user) -->
+          <div class="info-card" id="privateInfoCard" style="display: none;">
+            <div class="card-title">
+              <i class="fas fa-lock"></i>
+              Private Information
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value" id="private-email">Loading...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Full Name:</span>
+                <span class="info-value" id="private-fullname">Loading...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Settings Info -->
+          <div class="info-card" id="privacyInfoCard">
+            <div class="card-title">
+              <i class="fas fa-shield-alt"></i>
+              Privacy Status
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Profile Visibility:</span>
+                <span class="info-value">
+                  <span id="privacy-visibility">Public</span>
+                  <span class="privacy-badge public" id="privacyBadge">Public</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restricted Content (Shown when profile is private) -->
+  <div class="main-content" id="restrictedContent" style="display: none;">
+    <div class="profile-container">
+      <div class="restricted-content">
+        <i class="fas fa-lock"></i>
+        <h2 style="color: var(--color-accent); margin-bottom: 15px;">Profile is Private</h2>
+        <p>This user's profile is set to private. You need to follow them to view their full profile.</p>
+        <button class="follow-btn" id="privateFollowBtn" style="margin-top: 20px; max-width: 200px;">
+          <i class="fas fa-user-plus"></i> Follow to View
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastMessage">Action completed!</span>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <footer class="bottom-nav-bar">
+    <a href="../homepage.html" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    
+    <a href="../updates/updates.html" class="nav-item">
+      <i class="fas fa-bell"></i>
+      <span>Updates</span>
+    </a>
+    
+    <a href="../Live_Chat/live.html" class="nav-item">
+      <i class="fas fa-comments"></i>
+      <span>Live Chat</span>
+    </a>
+    
+    <a href="../profile/profile.html" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      getDoc, 
+      doc,
+      collection,
+      query,
+      where,
+      getDocs,
+      setDoc,
+      deleteDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { 
+      onAuthStateChanged, 
+      getAuth, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCy5uQGcg1cALqFSa1xAQOL6lX8Gz5nFNU",
+      authDomain: "motion-flow-47450.firebasestorage.app",
+      databaseURL: "https://motion-flow-47450-default-rtdb.firebaseio.com",
+      projectId: "motion-flow-47450",
+      storageBucket: "motion-flow-47450.firebasestorage.app",
+      messagingSenderId: "686875529848",
+      appId: "1:686875529848:web:48edf5164aaaf938cdd38d",
+      measurementId: "G-K46N8C1HFQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const mainContent = document.getElementById("mainContent");
+    const restrictedContent = document.getElementById("restrictedContent");
+    const backBtn = document.getElementById("backBtn");
+    const profileAvatar = document.getElementById("profile-avatar");
+    const nicknameElement = document.getElementById("nickname");
+    const usernameElement = document.getElementById("username");
+    const profileBio = document.getElementById("profile-bio");
+    const followersCount = document.getElementById("followers-count");
+    const followingCount = document.getElementById("following-count");
+    const publicUsername = document.getElementById("public-username");
+    const publicInterests = document.getElementById("public-interests");
+    const publicLocation = document.getElementById("public-location");
+    const joinDate = document.getElementById("join-date");
+    const privateEmail = document.getElementById("private-email");
+    const privateFullname = document.getElementById("private-fullname");
+    const privacyVisibility = document.getElementById("privacy-visibility");
+    const privacyBadge = document.getElementById("privacyBadge");
+    const socialLinksContainer = document.getElementById("social-links");
+    const followBtn = document.getElementById("followBtn");
+    const privateFollowBtn = document.getElementById("privateFollowBtn");
+    const messageBtn = document.getElementById("messageBtn");
+    const privateInfoCard = document.getElementById("privateInfoCard");
+    const profileTitle = document.getElementById("profileTitle");
+    const profileSubtitle = document.getElementById("profileSubtitle");
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+
+    // Sidebar elements
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const logOutBtn = document.getElementById("logOutBtn");
+
+    let currentUserId = null;
+    let viewingUserId = null;
+    let isFollowing = false;
+    let userProfileData = null;
+
+    // Get userId from URL parameter
+    function getUserIdFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('userId');
+    }
+
+    // Show/hide loading
+    function showLoading() {
+      loadingOverlay.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      loadingOverlay.classList.add('hidden');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      toastMessage.textContent = message;
+      toast.className = `toast ${type}`;
+      toastIcon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Back button functionality
+    backBtn.addEventListener('click', () => {
+      window.history.back();
+    });
+
+    // Format date
+    function formatDate(timestamp) {
+      if (!timestamp) return 'Unknown';
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    // Load followers and following counts
+    async function loadFollowStats(userId) {
+      try {
+        // Load followers count
+        const followersQuery = query(
+          collection(db, "followers"),
+          where("followingId", "==", userId)
+        );
+        const followersSnapshot = await getDocs(followersQuery);
+        followersCount.textContent = followersSnapshot.size.toString();
+
+        // Load following count
+        const followingQuery = query(
+          collection(db, "followers"),
+          where("followerId", "==", userId)
+        );
+        const followingSnapshot = await getDocs(followingQuery);
+        followingCount.textContent = followingSnapshot.size.toString();
+
+        // Check if current user is following this user
+        if (currentUserId && currentUserId !== userId) {
+          const followCheckQuery = query(
+            collection(db, "followers"),
+            where("followerId", "==", currentUserId),
+            where("followingId", "==", userId)
+          );
+          const followCheckSnapshot = await getDocs(followCheckQuery);
+          isFollowing = !followCheckSnapshot.empty;
+          updateFollowButton();
+        }
+
+      } catch (error) {
+        console.error("Error loading follow stats:", error);
+      }
+    }
+
+    // Update follow button state
+    function updateFollowButton() {
+      if (currentUserId === viewingUserId) {
+        followBtn.style.display = 'none';
+        privateFollowBtn.style.display = 'none';
+        return;
+      }
+
+      if (isFollowing) {
+        followBtn.innerHTML = '<i class="fas fa-user-check"></i> Following';
+        followBtn.classList.add('unfollow');
+        privateFollowBtn.innerHTML = '<i class="fas fa-user-check"></i> Following';
+        privateFollowBtn.classList.add('unfollow');
+      } else {
+        followBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+        followBtn.classList.remove('unfollow');
+        privateFollowBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+        privateFollowBtn.classList.remove('unfollow');
+      }
+    }
+
+    // Follow/Unfollow user
+    async function toggleFollow() {
+      if (!currentUserId || currentUserId === viewingUserId) return;
+
+      try {
+        const followRef = doc(db, "followers", `${currentUserId}_${viewingUserId}`);
+        
+        if (isFollowing) {
+          // Unfollow
+          await deleteDoc(followRef);
+          isFollowing = false;
+          showToast("Unfollowed user", "success");
+        } else {
+          // Follow
+          await setDoc(followRef, {
+            followerId: currentUserId,
+            followingId: viewingUserId,
+            timestamp: serverTimestamp()
+          });
+          isFollowing = true;
+          showToast("Following user", "success");
+          
+          // If profile was private and user followed, reload profile
+          if (userProfileData?.privacy?.profileVisibility === 'private') {
+            await loadUserProfile(viewingUserId);
+          }
+        }
+        
+        updateFollowButton();
+        await loadFollowStats(viewingUserId);
+        
+      } catch (error) {
+        console.error("Error toggling follow:", error);
+        showToast("Error updating follow status", "error");
+      }
+    }
+
+    // Update UI with user data
+    function updateUserUI(userData) {
+      // Update title and subtitle
+      const displayName = userData.nickname || userData.username || 'User';
+      profileTitle.textContent = `${displayName}'s Profile`;
+      profileSubtitle.textContent = `Viewing ${displayName}'s profile information`;
+      
+      // Set nickname
+      if (userData.nickname) {
+        nicknameElement.textContent = userData.nickname;
+      } else if (userData.username) {
+        nicknameElement.textContent = userData.username;
+      }
+      
+      // Set username with @ symbol
+      if (userData.username) {
+        usernameElement.textContent = `@${userData.username}`;
+        publicUsername.textContent = `@${userData.username}`;
+      }
+      
+      // Set bio
+      if (userData.bio) {
+        profileBio.textContent = userData.bio;
+      }
+      
+      // Set profile picture
+      if (userData.profileImage) {
+        profileAvatar.innerHTML = `
+          <img src="${userData.profileImage}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+        `;
+      }
+      
+      // Set location
+      if (userData.location) {
+        publicLocation.textContent = userData.location;
+      }
+      
+      // Set join date
+      if (userData.createdAt) {
+        joinDate.textContent = formatDate(userData.createdAt);
+      }
+      
+      // Set interests
+      if (userData.interests && Array.isArray(userData.interests) && userData.interests.length > 0) {
+        publicInterests.innerHTML = '';
+        userData.interests.forEach(interest => {
+          const tag = document.createElement('div');
+          tag.className = 'interest-tag';
+          tag.textContent = interest;
+          publicInterests.appendChild(tag);
+        });
+      } else {
+        publicInterests.innerHTML = '<div style="color: var(--color-text-muted);">No interests selected</div>';
+      }
+      
+      // Set social links
+      if (userData.social) {
+        socialLinksContainer.innerHTML = '';
+        
+        if (userData.social.tiktok) {
+          const tiktokLink = document.createElement('a');
+          tiktokLink.href = `https://tiktok.com/@${userData.social.tiktok}`;
+          tiktokLink.target = '_blank';
+          tiktokLink.className = 'social-link tiktok';
+          tiktokLink.innerHTML = '<i class="fab fa-tiktok"></i>';
+          socialLinksContainer.appendChild(tiktokLink);
+        }
+        
+        if (userData.social.youtube) {
+          const youtubeLink = document.createElement('a');
+          youtubeLink.href = userData.social.youtube.includes('http') ? userData.social.youtube : `https://youtube.com/${userData.social.youtube}`;
+          youtubeLink.target = '_blank';
+          youtubeLink.className = 'social-link youtube';
+          youtubeLink.innerHTML = '<i class="fab fa-youtube"></i>';
+          socialLinksContainer.appendChild(youtubeLink);
+        }
+        
+        if (userData.social.instagram) {
+          const instagramLink = document.createElement('a');
+          instagramLink.href = `https://instagram.com/${userData.social.instagram}`;
+          instagramLink.target = '_blank';
+          instagramLink.className = 'social-link instagram';
+          instagramLink.innerHTML = '<i class="fab fa-instagram"></i>';
+          socialLinksContainer.appendChild(instagramLink);
+        }
+        
+        if (socialLinksContainer.children.length === 0) {
+          socialLinksContainer.innerHTML = '<div style="color: var(--color-text-muted);">No social links added</div>';
+        }
+      }
+      
+      // Set privacy settings
+      if (userData.privacy) {
+        const visibility = userData.privacy.profileVisibility || 'public';
+        privacyVisibility.textContent = visibility.charAt(0).toUpperCase() + visibility.slice(1);
+        privacyBadge.textContent = visibility.charAt(0).toUpperCase() + visibility.slice(1);
+        privacyBadge.className = `privacy-badge ${visibility}`;
+        
+        // Show private info if viewing own profile
+        if (currentUserId === viewingUserId) {
+          privateInfoCard.style.display = 'block';
+          if (userData.email) {
+            privateEmail.textContent = userData.email;
+          }
+          if (userData.fullName) {
+            privateFullname.textContent = userData.fullName;
+          }
+        }
+      }
+      
+      userProfileData = userData;
+      
+      // FIXED: Update message button with the correct user ID
+      updateMessageButton();
+    }
+
+    // FIXED: Update message button to properly pass user ID
+    function updateMessageButton() {
+      if (!viewingUserId) return;
+      
+      // Create the correct chat URL with userId parameter
+      const chatUrl = `../Chats/chat.html?userId=${viewingUserId}`;
+      
+      // Update the message button href
+      messageBtn.href = chatUrl;
+      
+      console.log('🔗 Message button URL:', chatUrl);
+    }
+
+    // Load user profile data
+    async function loadUserProfile(userId) {
+      showLoading();
+      
+      try {
+        console.log('Loading profile for user:', userId);
+        const userDoc = await getDoc(doc(db, "users", userId));
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User data loaded:', userData);
+          
+          // Check if profile is private and user is not following
+          const isPrivate = userData.privacy?.profileVisibility === 'private';
+          const isOwnProfile = currentUserId === userId;
+          
+          if (isPrivate && !isOwnProfile && !isFollowing) {
+            // Show restricted content
+            mainContent.style.display = 'none';
+            restrictedContent.style.display = 'block';
+            hideLoading();
+            return;
+          }
+          
+          // Show full profile
+          restrictedContent.style.display = 'none';
+          mainContent.style.display = 'block';
+          updateUserUI(userData);
+          await loadFollowStats(userId);
+          
+        } else {
+          console.log('⚠️ User not found');
+          showToast("User not found", "error");
+          setTimeout(() => {
+            window.history.back();
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("❌ Error loading user data:", error);
+        showToast("Error loading profile", "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Initialize
+    async function initialize() {
+      showLoading();
+      viewingUserId = getUserIdFromURL();
+      
+      if (!viewingUserId) {
+        showToast("No user specified", "error");
+        setTimeout(() => {
+          window.location.href = "../Users/users.html";
+        }, 2000);
+        return;
+      }
+
+      console.log('👤 Viewing user ID:', viewingUserId);
+
+      // Auth state listener
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          currentUserId = user.uid;
+          console.log('👤 Current user:', currentUserId);
+          
+          await loadUserProfile(viewingUserId);
+          
+        } else {
+          console.log("⚠️ No user logged in");
+          // Still load profile for public viewing
+          await loadUserProfile(viewingUserId);
+        }
+      });
+    }
+
+    // Event Listeners
+    followBtn.addEventListener('click', toggleFollow);
+    privateFollowBtn.addEventListener('click', toggleFollow);
+
+    // FIXED: Message button - properly handles the click
+    messageBtn.addEventListener('click', (e) => {
+      if (!currentUserId) {
+        e.preventDefault();
+        showToast("Please login to send messages", "error");
+        return;
+      }
+      
+      if (!viewingUserId) {
+        e.preventDefault();
+        showToast("User information not loaded", "error");
+        return;
+      }
+      
+      console.log('📱 Going to chat with:', viewingUserId);
+      
+      // Store userId in sessionStorage as backup
+      sessionStorage.setItem('chatWithUserId', viewingUserId);
+      
+      // The link already has the correct URL with ?userId= parameter
+      // Let it navigate normally
+    });
+
+    // Logout functionality
+    logOutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = '../index.html';
+      } catch (error) {
+        console.error("Logout failed:", error);
+        showToast("Logout failed", "error");
+      }
+    });
+
+    // Start initialization
+    initialize();
+
+    // Handle escape key for sidebar (if implemented)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        // Add sidebar close logic if needed
+      }
+    });
+
+  </script>
+</body>
+</html>
